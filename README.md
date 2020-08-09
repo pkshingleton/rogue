@@ -26,10 +26,9 @@ In CLI or terminal, navigate to root directory of project and enter:
 
     >> python rogue.py 
 
-This will open a new window. Use the arrow keys to move around. 
+The game will open in a new window. Use the arrow keys to move around. 
 
 
+#### KEYS:
 
-**'ALT-ENTER'** will go full-screen. 
-
-**'ESC'** will close the window and exit.
+**'x'** will close the window and exit
