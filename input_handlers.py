@@ -1,9 +1,10 @@
 import tcod as libtcod
 
 
-# Checks input key and returns a corresponding value to adjust whatever needs moved
+# Checks input key and returns a dictionary (aka object) for the engine to parse
 def handle_keys(key):
 
+    #------------------| MOVEMENT
     # Keyboard (UP, DOWN, LEFT, RIGHT):
     if key.vk == libtcod.KEY_UP:
         return {'move': (0, -1)}
@@ -18,13 +19,15 @@ def handle_keys(key):
         return {'move': (1, 0)}
 
 
-    # 'ALT+ENTER' to toggle full-screen
+    #------------------| NON-MOVEMENT
+    # 'ALT+ENTER' = full-screen
     if key.vk == libtcod.KEY_ENTER and key.lalt:
         return {'fullscreen': True}
 
-    # 'ESC' key exits the game
+    # 'ESC' = exit the game
     elif key.vk == libtcod.KEY_ESCAPE:
         return {'exit': True}
+
 
     # No key pressed, return nothing 
     return {}

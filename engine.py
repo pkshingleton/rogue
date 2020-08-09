@@ -6,7 +6,6 @@ import tcod as libtcod
 
 
 
-
 #----------------------------------------------------------------------// GLOBALS
 
 # Colors
@@ -16,20 +15,24 @@ white   = libtcod.white
 
 
 
-
-#----------------------------------------------------------------------// FUNCTION
+#----------------------------------------------------------------------// ENGINE (MAIN)
 
 def main():
+    #--------------------| VARS
     # Window dimensions/resolution. --> (Move to JSON 'settings' file)
     screen_width = 80
     screen_height = 50
 
+
+    #--------------------| CLASSES (scoped)
     # Player character screen position
     class PLAYER:
         x   = int(screen_width / 2)
         y   = int(screen_height / 2)
 
 
+    #--------------------| CALLS
+    # Load.png image for game font (in root directory)
     libtcod.console_set_custom_font('arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
 
     # Boolean value sets full-screen or windowed --> (True, False)
@@ -40,14 +43,15 @@ def main():
     mouse   = libtcod.Mouse()
 
 
-    # ***----- Game/main loop -----*** 
+    #--------------------| MAIN GAME LOOP
     while not libtcod.console_is_window_closed():
 
         # Pass captured keyboard/mouse input to input event bus 
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS, key, mouse)
 
         libtcod.console_set_default_foreground(0, white)
-        # Draw the 'player' sprite (@) and set starting position --> (console, x, y, player sprite, background)
+
+        # Draw 'player' sprite (@) and set starting position --> (console, x, y, player sprite, background)
         libtcod.console_put_char(0, PLAYER.x, PLAYER.y, '@', libtcod.BKGND_NONE)
         libtcod.console_flush()
 
@@ -60,10 +64,9 @@ def main():
 
 
 
-
-
 #----------------------------------------------------------------------// INIT
 
-# Sets the main() function to call immediately when the script is run
+# Calls the main() function when the interpreter executes the script 
+# (RUN: '>> python engine.py')
 if __name__ == '__main__':
     main()
