@@ -14,7 +14,7 @@ white   = libtcod.white
 
 
 
-#_______________________________________________________________________// ENGINE (MAIN)
+#_______________________________________________________________________// ENGINE (OLD)
 def main():
    
     # Window dimensions/resolution. --> (Move to JSON 'settings' file)

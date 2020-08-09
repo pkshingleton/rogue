@@ -3,17 +3,15 @@
 
 I'm using the **[libtcod](https://github.com/libtcod/python-tcod)** library to explore and comprehend basic engine construction. Understanding engine structure will help with development of future projects and ideas.
 
-## ____________________
-
-The main loop controls all event bussing and instantiation. Keyboard/mouse input and tilemaps are handled by modules- the core functions are called from the engine main loop and return dictionaries (objects) to the event bus for parsing. Depending on the output of the event bus, the screen will update (re-draw) with any changes to UI, character position, or text.  
-
 
 
 ## ____________________
+
+Following **[this tutorial](http://rogueliketutorials.com/tutorials/tcod/v2/)**, which has been updated to include newer Python 3 syntax and libtcod functions.
 
 ### Progress:
 
-[Current segment](http://rogueliketutorials.com/tutorials/tcod/part-2/): generic Entity, render functions, and the map.
+[Part 1](http://rogueliketutorials.com/tutorials/tcod/v2/part-1/): setup and drawing the character.
 
 
 
