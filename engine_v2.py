@@ -4,7 +4,7 @@ Drawing/rendering occurs by updating the state of the console, and then printing
 '''
 
 
-
+#_______________________________________________________________________// MODULES
 import tcod 
 from actions import (EscapeAction, MovementAction)
 from input_handlers import EventHandler
@@ -28,12 +28,12 @@ def main() -> None:
         "dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD
     )
 
-    # Sets instance of the 'EventHandler' class
+    # Sets instance of the 'EventHandler' class - receives and processes events
     event_handler = EventHandler()
 
-    # Set/Draw terminal area
+    # Set up the draw area/canvas (in this case, a separate terminal window)
     with tcod.context.new_terminal(
-        # Pass in screen size
+       
         screen_width,
         screen_height,
 
@@ -59,18 +59,23 @@ def main() -> None:
 
             # Draw/output the current state of the console (primary render function / each re-draw is a 'frame')
             context.present(root_console)
+            root_console.clear()
 
-            # Loop until user input is detected
+
+            #-----|| MAIN EVENT LOOP 
             for event in tcod.event.wait():
 
+                # Buses (dispatches) the event to the handler, which identifies it and returns an action "type"
                 action = event_handler.dispatch(event)
 
                 if action is None:
                     continue
                 
+                # 'KeyDown' event returns a 'movement' action carries back values for updating coordinates
                 if isinstance(action, MovementAction):
                     player_x += action.dx
                     player_y += action.dy
 
                 elif isinstance(action, EscapeAction):
                     raise SystemExit()
+ 

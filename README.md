@@ -11,13 +11,14 @@ Following **[this tutorial](http://rogueliketutorials.com/tutorials/tcod/v2/)**,
 
 ### Progress:
 
-[Part 1](http://rogueliketutorials.com/tutorials/tcod/v2/part-1/): setup and drawing the character.
+[Part 1](http://rogueliketutorials.com/tutorials/tcod/v2/part-1/): get input and draw the character.
 
+-> **[Part 2](http://rogueliketutorials.com/tutorials/tcod/v2/part-2/)**: 'Entity', render functions, and the map.
 
 
 ## ____________________
 
-### Setup / Install / Run:
+### Setup and Run:
 
 Requirements: (will add later)
 
@@ -26,9 +27,13 @@ In CLI or terminal, navigate to root directory of project and enter:
 
     >> python rogue.py 
 
-The game will open in a new window. Use the arrow keys to move around. 
+The game will open in a new window.
 
 
-#### KEYS:
+## ____________________
 
-**'x'** will close the window and exit
+### Controls:
+
+**UP, DOWN, LEFT, RIGHT**: moves the player sprite around on the screen
+
+**ESC**: close the window and exit
