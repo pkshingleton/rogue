@@ -4,8 +4,8 @@ import tcod as libtcod
 # Checks input key and returns a dictionary (aka object) for the engine to parse
 def handle_keys(key):
 
-    #------------------| MOVEMENT
-    # Keyboard (UP, DOWN, LEFT, RIGHT):
+    #--------|| MOVEMENT KEYS
+    # (UP, DOWN, LEFT, RIGHT)
     if key.vk == libtcod.KEY_UP:
         return {'move': (0, -1)}
 
@@ -19,7 +19,7 @@ def handle_keys(key):
         return {'move': (1, 0)}
 
 
-    #------------------| NON-MOVEMENT
+    #--------|| NON-MOVEMENT KEYS
     # 'ALT+ENTER' = full-screen
     if key.vk == libtcod.KEY_ENTER and key.lalt:
         return {'fullscreen': True}

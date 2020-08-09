@@ -13,7 +13,7 @@ The main loop controls all event bussing and instantiation. Keyboard/mouse input
 
 ### Progress:
 
-[Current segment](http://rogueliketutorials.com/tutorials/tcod/part-1/) covers setting up input handlers and updating user's position on-screen.
+[Current segment](http://rogueliketutorials.com/tutorials/tcod/part-2/): generic Entity, render functions, and the map.
 
 
 
@@ -26,7 +26,7 @@ Requirements: (will add later)
 ### ----------
 In CLI or terminal, navigate to root directory of project and enter:
 
-    >> python engine.py 
+    >> python rogue.py 
 
 This will open a new window. Use the arrow keys to move around. 
 
