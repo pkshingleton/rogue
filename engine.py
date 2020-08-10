@@ -1,84 +1,61 @@
-#_______________________________________________________________________// IMPORTS
-# Main library
-import tcod as libtcod
-from input_handlers import handle_keys
+'''
+Controls rendering, creating, reading, updating, and removing entities.
+Structures when content is generated and placed.
+Sources event handlers and routes values to entities based on those events.
+'''
 
 
 
+#_______________________________________________________________________// MODULES
+from typing import (Set, Iterable, Any)
 
-#_______________________________________________________________________// GLOBALS
-# Colors
-red     = libtcod.red
-white   = libtcod.white
+from tcod.context import Context
+from tcod.console import Console
 
-
-
-
-#_______________________________________________________________________// ENGINE (OLD)
-def main():
-   
-    # Window dimensions/resolution. --> (Move to JSON 'settings' file)
-    screen_width = 80
-    screen_height = 50
+from actions import (EscapeAction, MovementAction)
+from entity import Entity
+from game_map import GameMap
+from input_handlers import EventHandler
 
 
-    # Player character screen position --> (Sets to center of screen)
-    class PLAYER:
-        x   = int(screen_width / 2)
-        y   = int(screen_height / 2)
+
+#_______________________________________________________________________// CLASS
+class Engine:
+
+    # Initialize
+    def __init__(self, entities: Set[Entity], event_handler: EventHandler, game_map: GameMap, player: Entity):
+
+        self.entities       = entities
+        self.event_handler  = event_handler
+        self.game_map       = game_map
+        self.player         = player
 
 
-    # Load.png image for game font (in root directory)
-    libtcod.console_set_custom_font('arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
+    #-----| Event handler
+    def handle_events(self, events: Iterable[Any]) -> None:
 
-    # Set screen size, title, and full-screen or windowed mode --> (True, False)
-    libtcod.console_init_root(screen_width, screen_height, 'Rogue', False)
+        for event in events:
+            action = self.event_handler.dispatch(event)
 
-    # Store keyboard/mouse input values
-    key     = libtcod.Key()
-    mouse   = libtcod.Mouse()
+            if action is None:
+                continue
 
+        if isinstance(action, MovementAction):
+            if self.game_map.tiles["walkable"][self.player.x + action.dx, self.player.y + action.dy]:
+                self.player.move(dx=action.dx, dy=action.dy)
 
-    '''
-    --------------------
-    >>> MAIN GAME LOOP  
-    --------------------
-    ''' 
-    while not libtcod.console_is_window_closed():
-
-        #----------|| EVENTS :: INPUT
-        # Pass captured keyboard/mouse input to input event bus 
-        libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS, key, mouse)
+        elif isinstance(action, EscapeAction):
+            raise SystemExit()
 
 
-        #----------|| DRAW FUNCTIONS
-        libtcod.console_set_default_foreground(0, white)
+    #-----| Rendering
+    def render(self, console: Console, context: Context) -> None:
 
-        # Set target console, 'player' sprite, position, and background
-        libtcod.console_put_char(0, PLAYER.x, PLAYER.y, '@', libtcod.BKGND_NONE)
+        self.game_map.render(console)
 
-        # Clear console and re-draw
-        libtcod.console_flush()
+        for entity in self.entities:
+            console.print(entity.x, entity.y, entity.char, fg=entity.color)
 
-
-        #----------|| HANDLER :: KEYBOARD
-        # Stores the returned dicts of the handler function
-        action = handle_keys(key)
-
-        # Get dict key/value and store it
-        move        = action.get('move')
-        exit        = action.get('exit')
-        fullscreen  = action.get('fullscreen')
-
-        if move:
-            dx, dy = move
-            PLAYER.x += dx
-            PLAYER.y += dy
-
-        if exit:
-            return True
-
-        if fullscreen:
-            libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
-
-
+        context.present(console)
+        console.clear()
+    

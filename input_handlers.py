@@ -1,5 +1,4 @@
 '''
-
 The event handler takes a detected event and assigns a corresponding action "type".
 
 - If a 'KeyDown' event is detected:
@@ -10,8 +9,8 @@ The event handler takes a detected event and assigns a corresponding action "typ
 
 - If a 'Quit' event is detected:
     > Close and exit the game
-
 '''
+
 
 
 #_______________________________________________________________________// MODULES
@@ -21,7 +20,8 @@ from actions import (Action, EscapeAction, MovementAction)
 
 
 
-#-----|| INPUT EVENT HANDLER :: (extends the tcod 'EventDispatch' class)
+#_______________________________________________________________________// CLASS
+# (extends the tcod 'EventDispatch' class)
 class EventHandler(tcod.event.EventDispatch[Action]):
 
     # 'QUIT' event
