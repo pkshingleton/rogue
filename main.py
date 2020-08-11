@@ -58,7 +58,7 @@ def main() -> None:
 
 
     #_____________// INSTANCE / ENGINE
-    # Gets and sets 
+    # Engine class returns actions from events, takes a map of tiles, and prints them to the console along with the player and other entities.
     engine = Engine(
         entities        = entities, 
         event_handler   = event_handler, 
