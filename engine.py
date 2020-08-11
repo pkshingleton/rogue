@@ -1,7 +1,16 @@
 '''
-Controls rendering, creating, reading, updating, and removing entities.
-Structures when content is generated and placed.
-Sources event handlers and routes values to entities based on those events.
+Controls rendering, creating, reading, updating, and removing entities, tiles, and events.
+
+To instantiate an engine, it will need:
+    - a set of entities (enemies, player, other NPCs)
+    - an event handler (to check for input and return corresponding 'actions')
+    - a map (sets of tiles structured by the GameMap class)
+    - a Player entity (a separate reference to one the entities passed in via the first expected argument)
+
+The engine "render" function in sequence:
+    - Passes the received map (collection of tiles) to the console
+    - Loops through the received 'entities' set and sends each to the console with a location, symbol, and color
+    - Prints the console to the screen (and clears it to start all over again).
 '''
 
 
@@ -23,6 +32,7 @@ from input_handlers import EventHandler
 class Engine:
 
     # Initialize
+    # (Expects a set of entities, an event handler, a map, and a separate reference to the player entity)
     def __init__(self, entities: Set[Entity], event_handler: EventHandler, game_map: GameMap, player: Entity):
 
         self.entities       = entities
@@ -32,6 +42,7 @@ class Engine:
 
 
     #-----| Event handler
+    # (Continuously loops through the events passed in by 'EventHandler' class from the 'input_handlers.py' module)
     def handle_events(self, events: Iterable[Any]) -> None:
 
         for event in events:
@@ -39,11 +50,14 @@ class Engine:
 
             if action is None:
                 continue
-
+        
+        # 'Movement' action was returned
         if isinstance(action, MovementAction):
+            # Check if tile can be walked on
             if self.game_map.tiles["walkable"][self.player.x + action.dx, self.player.y + action.dy]:
                 self.player.move(dx=action.dx, dy=action.dy)
 
+        # 'Escape' action was returned
         elif isinstance(action, EscapeAction):
             raise SystemExit()
 

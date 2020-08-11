@@ -1,6 +1,8 @@
 '''
-Tiles are parts of the map that can be traversed. 
+Tiles are parts of the map that can be interacted with. They represent doors/pits/entrances, etc. 
 Some tiles can't be crossed (ie, walls) while others may do things like damage the player (fire, etc.)
+
+Tiles are placed by the GameMap class and rendered (drawn) by the engine.
 '''
 
 

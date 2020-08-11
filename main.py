@@ -14,9 +14,9 @@ from input_handlers import EventHandler
 
 
 
-#_______________________________________________________________________// MAIN FUNCTION
-def main() -> None:
 
+def main() -> None:
+#_______________________________________________________________________// DECLARATIONS
     # Set default window screen size (will move into JSON 'settings' file later)
     screen_width    = 80
     screen_height   = 50
@@ -34,8 +34,8 @@ def main() -> None:
     event_handler = EventHandler()
 
 
-    #-----| ENTITIES
-    # (entities require: x, y, symbol, and color)
+    #_______________________________________________________________________// ENTITIES
+    # (entities require: x/y coordinates, symbol, and color)
     player  = Entity(
         int(screen_width / 2), 
         int(screen_height / 2), 
@@ -47,15 +47,18 @@ def main() -> None:
         "@", (255,255,0)
     )
 
-    # Place the entities into a container object (dict)
+    # Place the entities into a set so they can be passed into the engine
     entities = {npc, player}
 
 
-    #-----| MAP
+    #_______________________________________________________________________// MAP
     # Set the map/entity drawing area
     game_map = GameMap(map_width, map_height)
 
-    # Instantiate the engine
+
+
+    #_______________________________________________________________________// ENGINE
+    # Gets and sets 
     engine = Engine(
         entities        = entities, 
         event_handler   = event_handler, 
@@ -64,9 +67,9 @@ def main() -> None:
     )
 
 
-    #-----| CANVAS / DRAW
+    #_______________________________________________________________________// CANVAS - WINDOW
     with tcod.context.new_terminal(
-        
+
         screen_width,
         screen_height,
         tileset  = tileset,
@@ -75,11 +78,12 @@ def main() -> None:
 
     ) as context:
 
-        # Pass in screen size and coordinate order - (Numpy array default is [y/x] - 'F' reverses the read order to [x/y])
+        # Instantiate the console
+        # (Numpy array default is [y/x] - 'F' reverses the read order to [x/y] which is more conventional)
         root_console = tcod.Console(screen_width, screen_height, order="F")
 
         '''
-        >>> MAIN GAME LOOP
+        ____________________________________________________________________// MAIN GAME LOOP
         '''
         while True:
 
@@ -89,7 +93,7 @@ def main() -> None:
             # Await user input/event
             events = tcod.event.wait()
 
-            # Pass event to the event handler to determine an action
+            # Pass events to the engine's event handler to determine responses to those events
             engine.handle_events(events)
 
  

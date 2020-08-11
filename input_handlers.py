@@ -21,15 +21,15 @@ from actions import (Action, EscapeAction, MovementAction)
 
 
 #_______________________________________________________________________// CLASS
-# (extends the tcod 'EventDispatch' class)
+# (Extends the tcod 'EventDispatch' class - Listens for pre-set events and return an 'action')
 class EventHandler(tcod.event.EventDispatch[Action]):
 
-    # 'QUIT' event
+    #-----| 'QUIT' event
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
         raise SystemExit()
 
 
-    # KEY-PRESS event
+    #-----| KEY-PRESS event
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
 
         # Set the default action to 'none' (returned when no key/invalid key is pressed)
