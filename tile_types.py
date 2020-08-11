@@ -6,15 +6,15 @@ Tiles are placed by the GameMap class and rendered (drawn) by the engine.
 '''
 
 
-
 #_______________________________________________________________________// MODULES
 from typing import Tuple
 import numpy as np
 
 
 
-#_______________________________________________________________________// DATA TYPES
+#_______________________________________________________________________// DATA (TYPES)
 # Structure the datatype for tile graphics (Using Numpy datatypes/dtype)
+
 # This is the 'graphical' representation of the tile. Currently uses Unicode letters (+, <, |, etc.)
 graphic_datatype = np.dtype(
     [
@@ -35,18 +35,21 @@ tile_datatype = np.dtype(
 )
 
 
-# Helper function for defining individual tile types
+
+#_____________// FUNCTION / CREATE NEW TILE
+''' Helper function for defining individual tile types '''
 def new_tile(
     *,          # Enforces keyword usage so parameter order doesn't matter
     walkable    : int, 
     transparent : int,
     dark        : Tuple[int, Tuple[int, int, int], Tuple[int, int, int]]
 ) -> np.ndarray:
-
+    
     return np.array((walkable, transparent, dark), dtype=tile_datatype)
 
 
-#-----| TILES
+
+#_______________________________________________________________________// DATA (TUPLES)
 # Common floor tile  (walkable, doesn't block view)
 floor = new_tile(
     walkable      =True, 

@@ -7,7 +7,6 @@ Actions are used by the input event handler for returning an outcome (action) ba
 '''
 
 
-
 #_______________________________________________________________________// CLASS
 # Base class 
 class Action:

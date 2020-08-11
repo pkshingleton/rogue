@@ -14,7 +14,6 @@ The engine "render" function in sequence:
 '''
 
 
-
 #_______________________________________________________________________// MODULES
 from typing import (Set, Iterable, Any)
 
@@ -34,14 +33,13 @@ class Engine:
     # Initialize
     # (Expects a set of entities, an event handler, a map, and a separate reference to the player entity)
     def __init__(self, entities: Set[Entity], event_handler: EventHandler, game_map: GameMap, player: Entity):
-
         self.entities       = entities
         self.event_handler  = event_handler
         self.game_map       = game_map
         self.player         = player
 
 
-    #-----| Event handler
+    #_____________// FUNCTION / EVENT-HANDLER
     # (Continuously loops through the events passed in by 'EventHandler' class from the 'input_handlers.py' module)
     def handle_events(self, events: Iterable[Any]) -> None:
 
@@ -62,7 +60,7 @@ class Engine:
             raise SystemExit()
 
 
-    #-----| Rendering
+    #_____________// FUNCTION / RENDER
     def render(self, console: Console, context: Context) -> None:
 
         self.game_map.render(console)

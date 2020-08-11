@@ -4,7 +4,6 @@ Drawing/rendering occurs by updating the state of the console, and then printing
 '''
 
 
-
 #_______________________________________________________________________// MODULES
 import tcod 
 from engine import Engine
@@ -14,9 +13,10 @@ from input_handlers import EventHandler
 
 
 
-
+#_______________________________________________________________________// FUNCTION
 def main() -> None:
-#_______________________________________________________________________// DECLARATIONS
+
+    #_____________// DECLARATIONS
     # Set default window screen size (will move into JSON 'settings' file later)
     screen_width    = 80
     screen_height   = 50
@@ -34,7 +34,7 @@ def main() -> None:
     event_handler = EventHandler()
 
 
-    #_______________________________________________________________________// ENTITIES
+    #_____________// DATA (TUPLES) / ENTITIES
     # (entities require: x/y coordinates, symbol, and color)
     player  = Entity(
         int(screen_width / 2), 
@@ -51,13 +51,13 @@ def main() -> None:
     entities = {npc, player}
 
 
-    #_______________________________________________________________________// MAP
+    #_____________// INSTANCE / MAP
     # Set the map/entity drawing area
     game_map = GameMap(map_width, map_height)
 
 
 
-    #_______________________________________________________________________// ENGINE
+    #_____________// INSTANCE / ENGINE
     # Gets and sets 
     engine = Engine(
         entities        = entities, 
@@ -67,7 +67,7 @@ def main() -> None:
     )
 
 
-    #_______________________________________________________________________// CANVAS - WINDOW
+    #_____________// TERMINAL / CANVAS
     with tcod.context.new_terminal(
 
         screen_width,
@@ -83,17 +83,16 @@ def main() -> None:
         root_console = tcod.Console(screen_width, screen_height, order="F")
 
         '''
-        ____________________________________________________________________// MAIN GAME LOOP
+        >>> _____________// LOOP / MAIN GAME
         '''
         while True:
 
             # Get context for the console, draw it to the screen, and clear it
             engine.render(console=root_console, context=context)
 
-            # Await user input/event
+            # Await user input/event and store it
             events = tcod.event.wait()
-
-            # Pass events to the engine's event handler to determine responses to those events
+            # Pass stored event to the engine's event handler
             engine.handle_events(events)
 
  

@@ -12,7 +12,6 @@ The event handler takes a detected event and assigns a corresponding action "typ
 '''
 
 
-
 #_______________________________________________________________________// MODULES
 from typing import Optional
 import tcod.event
@@ -24,12 +23,12 @@ from actions import (Action, EscapeAction, MovementAction)
 # (Extends the tcod 'EventDispatch' class - Listens for pre-set events and return an 'action')
 class EventHandler(tcod.event.EventDispatch[Action]):
 
-    #-----| 'QUIT' event
+    #_____________// FUNCTION / QUIT
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
         raise SystemExit()
 
 
-    #-----| KEY-PRESS event
+    #_____________// FUNCTION / KEY-DOWN
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
 
         # Set the default action to 'none' (returned when no key/invalid key is pressed)

@@ -4,7 +4,6 @@ This module defines how the entity fits into the world and what sub-classes it s
 '''
 
 
-
 #_______________________________________________________________________// MODULES
 from typing import Tuple
 
@@ -25,7 +24,7 @@ class Entity:
         self.color = color
 
 
-    # How the entity moves
+    #_____________// FUNCTION / MOVE
     def move(self, dx: int, dy: int) -> None:
         # Move the entity by a given amount
         self.x += dx
