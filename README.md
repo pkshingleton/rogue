@@ -13,7 +13,9 @@ Following **[this tutorial](http://rogueliketutorials.com/tutorials/tcod/v2/)**,
 
 [Part 1](http://rogueliketutorials.com/tutorials/tcod/v2/part-1/): get input and draw the character.
 
--> **[Part 2](http://rogueliketutorials.com/tutorials/tcod/v2/part-2/)**: 'Entity', render functions, and the map.
+[Part 2](http://rogueliketutorials.com/tutorials/tcod/v2/part-2/): 'Entity', render functions, and the map.
+
+-> **[Part 3](http://rogueliketutorials.com/tutorials/tcod/v2/part-3/)**: Generating a dungeon.
 
 
 ## ____________________
