@@ -11,6 +11,7 @@ The engine "render" function in sequence:
     - Passes the received map (collection of tiles) to the console
     - Loops through the received 'entities' set and sends each to the console with a location, symbol, and color
     - Prints the console to the screen (and clears it to start all over again).
+
 '''
 
 
@@ -38,7 +39,7 @@ class Engine:
         self.player         = player
 
 
-    #_____________// FUNCTION / EVENT-HANDLER
+    #_____/ METHOD / .handle_events(events)
     # (Continuously loops through the events passed in by 'EventHandler' class from the 'input_handlers.py' module)
     def handle_events(self, events: Iterable[Any]) -> None:
 
@@ -51,7 +52,7 @@ class Engine:
             action.perform(self, self.player)
 
 
-    #_____________// FUNCTION / RENDER
+    #_____/ METHOD / .render(console. context)
     def render(self, console: Console, context: Context) -> None:
 
         self.game_map.render(console)

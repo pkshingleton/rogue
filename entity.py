@@ -1,6 +1,10 @@
 '''
 An 'entity' is any object that populates the game (AKA, the content).
-This module defines how the entity fits into the world and what sub-classes it spawns.  
+The 'Entity' class takes an x/y position, it's graphic/symbol, and color
+
+Method:
+    move(): Updates entity's x/y position with a new coordinates.
+    
 '''
 
 
@@ -9,7 +13,7 @@ from typing import Tuple
 
 
 
-#_______________________________________________________________________// CLASS
+#_______________________________________________________________________// CLASSES
 # The generic object that represents players, enemies, items, etc.
 class Entity:
 
@@ -24,7 +28,7 @@ class Entity:
         self.color = color
 
 
-    #_____________// FUNCTION / MOVE
+    #_____/ METHOD / .move(dx, dy)
     def move(self, dx: int, dy: int) -> None:
         # Move the entity by a given amount
         self.x += dx

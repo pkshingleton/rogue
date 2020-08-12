@@ -1,22 +1,23 @@
 '''
 The engine instantiates the window/console and main game loop.
 Drawing/rendering occurs by updating the state of the console, and then printing it to the screen.
+
 '''
 
 
 #_______________________________________________________________________// MODULES
 import tcod 
+
 from engine import Engine
 from entity import Entity
-from game_map import GameMap
 from input_handlers import EventHandler
+from procgen import (generate_dungeon, generate_house)
 
 
 
 #_______________________________________________________________________// FUNCTION
 def main() -> None:
 
-    #_____________// DECLARATIONS
     # Set default window screen size (will move into JSON 'settings' file later)
     screen_width    = 80
     screen_height   = 50
@@ -34,7 +35,7 @@ def main() -> None:
     event_handler = EventHandler()
 
 
-    #_____________// DATA (TUPLES) / ENTITIES
+    #_____________// DATA (TUPLES) - ENTITIES
     # (entities require: x/y coordinates, symbol, and color)
     player  = Entity(
         int(screen_width / 2), 
@@ -51,13 +52,14 @@ def main() -> None:
     entities = {npc, player}
 
 
-    #_____________// INSTANCE / MAP
+    #_____________// INSTANCE - MAP
     # Set the map/entity drawing area
-    game_map = GameMap(map_width, map_height)
+    game_map = generate_dungeon(map_width, map_height)
+    game_map_2 = generate_house(map_width, map_height)
 
 
 
-    #_____________// INSTANCE / ENGINE
+    #_____________// INSTANCE - ENGINE
     # Engine class returns actions from events, takes a map of tiles, and prints them to the console along with the player and other entities.
     engine = Engine(
         entities        = entities, 
@@ -67,7 +69,7 @@ def main() -> None:
     )
 
 
-    #_____________// TERMINAL / CANVAS
+    #_____________// TERMINAL - CANVAS
     with tcod.context.new_terminal(
 
         screen_width,
@@ -78,12 +80,11 @@ def main() -> None:
 
     ) as context:
 
-        # Instantiate the console
         # (Numpy array default is [y/x] - 'F' reverses the read order to [x/y] which is more conventional)
         root_console = tcod.Console(screen_width, screen_height, order="F")
 
         '''
-        >>> _____________// LOOP / MAIN GAME
+        >>> _____________// LOOP - MAIN GAME
         '''
         while True:
 

@@ -9,6 +9,7 @@ The event handler takes a detected event and assigns a corresponding action "typ
 
 - If a 'Quit' event is detected:
     > Close and exit the game
+
 '''
 
 
@@ -19,16 +20,16 @@ from actions import (Action, EscapeAction, MovementAction)
 
 
 
-#_______________________________________________________________________// CLASS
+#_______________________________________________________________________// CLASSES
 # (Extends the tcod 'EventDispatch' class - Listens for pre-set events and return an 'action')
 class EventHandler(tcod.event.EventDispatch[Action]):
 
-    #_____________// FUNCTION / QUIT
+    #_____/ METHOD / .ev_quit(tcod.event.Quit)
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
         raise SystemExit()
 
 
-    #_____________// FUNCTION / KEY-DOWN
+    #_____/ METHOD / .ev_keydown(tcpd.event.KeyDown)
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
 
         # Set the default action to 'none' (returned when no key/invalid key is pressed)

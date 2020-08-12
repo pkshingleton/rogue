@@ -4,6 +4,7 @@ Actions are used by the input event handler for returning an outcome (action) ba
 'Movement' action takes two values. When this action type is returned to the engine, the values become x/y coordinates which offset the position of whatever is supposed to be moving (usually the player sprite).
 
 'Escape' action is used for exiting menus or closing things.
+
 '''
 
 
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
 
 
 
-#_______________________________________________________________________// CLASS
+#_______________________________________________________________________// CLASSES
 # Base class 
 class Action:
     
@@ -38,6 +39,7 @@ class Action:
 # 'ESC' key to exit the game
 class EscapeAction(Action):
     
+   #_____/ METHOD / .perform(engine, entity)
     def perform(self, engine: Engine, entity: Entity) -> None:
         raise SystemExit()
 
@@ -53,6 +55,8 @@ class MovementAction(Action):
         self.dx = dx
         self.dy = dy
 
+
+    #_____/ METHOD / .perform(engine, entity)
     # Checks the entity is landing on a walkable tile and not out of map bounds
     def perform(self, engine: Engine, entity: Entity) -> None:
 
@@ -68,6 +72,6 @@ class MovementAction(Action):
         if not engine.game_map.tiles["walkable"][dest_x, dest_y]:
             return 
 
-        # Otherwise, update entity's position (complete move action).
+        # Otherwise, update entity's position (completes the move action).
         entity.move(self.dx, self.dy)
 
