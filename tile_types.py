@@ -54,17 +54,20 @@ def new_tile(
 
 
 #_______________________________________________________________________// VARIABLES (TUPLES)
-# Colors for tiles
+# Colors for tiles (make this part of an external 'tile library')
+white       = (255, 255, 255)   # Absolute white
 dark_blue   = (50, 50, 150)
-red         = (158, 75, 58)
-brown       = (77, 72, 71)
-white       = (255, 255, 255)
-light_gray  = (114, 114, 117)
-dark_gray   = (62, 62, 62)
-black       = (0 ,0, 0)
-dark_brown  = (59, 56, 56)
 green       = (68, 97, 57)
 dark_green  = (56, 69, 52)
+light_tan   = (130, 110, 50)
+brown       = (77, 72, 71)
+dark_brown  = (59, 56, 56)
+red         = (158, 75, 58)
+light_gray  = (114, 114, 117)
+dark_gray   = (62, 62, 62)
+black       = (0 ,0, 0)         # Absolute black
+
+# --> (TO-DO: Create a tool to set colors, pick a symbol, and save as new tile) <--
 
 
 
@@ -73,7 +76,7 @@ dark_green  = (56, 69, 52)
 
 grass = new_tile(
     walkable        =True, 
-    transparent     =False, 
+    transparent     =True, 
     dark            =(ord("`"), green, dark_green),
 )
 
@@ -83,10 +86,10 @@ dirt = new_tile(
     dark            =(ord("."), green, brown)
 )
 
-floor = new_tile(
+floor_wood = new_tile(
     walkable        =True, 
-    transparent     =True, 
-    dark            =(ord(" "), (255, 255, 255), dark_blue),
+    transparent     =False, 
+    dark            =(ord("="), brown, light_tan),
 )
 
 wall = new_tile(

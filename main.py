@@ -18,12 +18,12 @@ from procgen import (generate_dungeon, generate_house)
 #_______________________________________________________________________// FUNCTION
 def main() -> None:
 
-    # Set default window screen size (will move into JSON 'settings' file later)
+    # Set default window screen size in tiles (will move into JSON 'settings' file later)
     screen_width    = 80
     screen_height   = 50
 
     map_width       = 80
-    map_height      = 45
+    map_height      = 45    # Leaves a 5-tile gap between bottom of map and bottom of screen (for text)
 
 
     # Use the root-level included font sprite sheet for characters
@@ -52,11 +52,10 @@ def main() -> None:
     entities = {npc, player}
 
 
-    #_____________// INSTANCE - MAP
-    # Set the map/entity drawing area
-    game_map = generate_dungeon(map_width, map_height)
-    game_map_2 = generate_house(map_width, map_height)
-
+    #_____________// INSTANCE - MAPS
+    # Set the map/entity drawing areas
+    OUTDOOR_GARDEN = generate_dungeon(map_width, map_height)
+    INDOOR_HOUSE = generate_house(map_width, map_height)
 
 
     #_____________// INSTANCE - ENGINE
@@ -64,12 +63,12 @@ def main() -> None:
     engine = Engine(
         entities        = entities, 
         event_handler   = event_handler, 
-        game_map        = game_map, 
+        game_map        = OUTDOOR_GARDEN, 
         player          = player
     )
 
 
-    #_____________// TERMINAL - CANVAS
+    #_____________// CANVAS (CONSOLE RENDER AREA)
     with tcod.context.new_terminal(
 
         screen_width,
