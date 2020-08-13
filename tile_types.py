@@ -28,7 +28,8 @@ tile_datatype = np.dtype(
     [
         ("walkable",    np.bool),           # True if this tile can be walked over.
         ("transparent", np.bool),           # True if this tile doesn't block FOV.
-        ("dark",        graphic_symbol),    # Symbol, foreground color, background color
+        ("dark",        graphic_symbol),    # Symbol, foreground color, background color (not explored)
+        ("light",       graphic_symbol),    # Symbol, foreground color, background color (explored)
     ]
 )
 
@@ -38,23 +39,35 @@ tile_datatype = np.dtype(
 # Pass in values to return an array - renders as a tile on the game map
 def new_tile(
     *,                          # Enforces keyword usage so parameter order doesn't matter
-    walkable    : int,          # Can pass through (True/False)
+    walkable : int,             # Can pass through (True/False)
     transparent : int,          # Display background color or not (True/False)
-    dark        : Tuple[        # Symbol and color ("Graphic")
-        int,                        #- Unicode character number
-        Tuple[int, int, int],       #- Foreground RGB values
-        Tuple[int, int, int]        #- Background RGB values
+    dark : Tuple[               # Symbol and RGB colors for foreground and background
+        int,                        
+        Tuple[int, int, int],       
+        Tuple[int, int, int]        
+    ],
+    light : Tuple[
+        int, 
+        Tuple[int, int, int],
+        Tuple[int, int, int],
     ]
 ) -> np.ndarray:
-    ''' Helper function for defining individual tile types '''
-    return np.array((walkable, transparent, dark), dtype=tile_datatype)
+    ''' 
+    Helper function for defining individual tile types 
+    '''
+    return np.array(
+        (walkable, transparent, dark, light), 
+        dtype=tile_datatype,
+    )
 
 
 
 #_______________________________________________________________________// VARIABLES (TUPLES)
+
 # Colors for tiles (make this part of an external 'tile library')
-white       = (255, 255, 255)   # Absolute white
+white       = (255, 255, 255)   
 dark_blue   = (50, 50, 150)
+light_green = (68, 172, 31)
 green       = (68, 97, 57)
 dark_green  = (56, 69, 52)
 light_tan   = (130, 110, 50)
@@ -64,37 +77,42 @@ red         = (158, 75, 58)
 light_gray  = (114, 114, 117)
 gray        = (100, 100, 100)
 dark_gray   = (62, 62, 62)
-black       = (0 ,0, 0)         # Absolute black
+black       = (0 ,0, 0)         
 
-# --> (TO-DO: Create a tool to set colors, pick a symbol, and save as new tile) <--
+
+# 'SHROUD' represents unexplored, unseen tiles
+SHROUD = np.array(ord(" "), (255, 255, 255), (0, 0, 0), dtype=graphic_symbol)
 
 
 
 #_______________________________________________________________________// DATA (TUPLES) - TILES
-# < walkable: true/false, transparent (no foreground): true/false, dark: unicode symbol, fg, bg > 
 
 grass = new_tile(
     walkable        =True, 
     transparent     =True, 
     dark            =(ord("`"), green, dark_green),
+    light           =(ord("`"), green, green), # No difference when explored
 )
 
 dirt = new_tile(
     walkable        =True,
     transparent     =True,
-    dark            =(ord("."), green, brown)
+    dark            =(ord("."), green, brown),
+    light           =(ord("."), green, brown),
 )
 
 floor_wood = new_tile(
     walkable        =True, 
     transparent     =False, 
-    dark            =(ord("="), brown, light_tan),
+    dark            =(ord("="), brown, brown),
+    light           =(ord("="), brown, light_tan), # No difference when explored
 )
 
 wall = new_tile(
     walkable        =False, 
     transparent     =False, 
-    dark            =(ord(" "), (255, 255, 255), gray),
+    dark            =(ord(" "), white, dark_gray),
+    light           =(ord(" "), white, gray)
 )
 
 

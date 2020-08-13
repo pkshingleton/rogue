@@ -30,7 +30,9 @@ if TYPE_CHECKING:
 
 #_______________________________________________________________________// CLASSES
 class RectangularRoom:
-    ''' Defines an area on a map to be filled with tiles. ''' 
+    ''' 
+    Defines an area on a map to be filled with tiles. 
+    ''' 
 
     # Initialization
     def __init__(self, x: int, y: int, width: int, height: int):
@@ -44,7 +46,9 @@ class RectangularRoom:
     
     @property
     def center(self) -> Tuple[int, int]:
-        ''' Returns the center location of this room as a Tuple (x, y). '''
+        ''' 
+        Returns the center location of this room as a Tuple (x, y). 
+        '''
         center_x = int((self.x1 + self.x2) / 2)
         center_y = int((self.y1 + self.y2) / 2)
 
@@ -53,13 +57,17 @@ class RectangularRoom:
     
     @property
     def inner(self) -> Tuple[slice, slice]:
-        ''' Returns inner area of this room as a 2D array index (a set of two coordinates) [(x1 + 1, x2), (y1 + 1, y2)] '''
+        ''' 
+        Returns inner area of this room as a 2D array index (a set of two coordinates) [(x1 + 1, x2), (y1 + 1, y2)] 
+        '''
         return slice(self.x1 + 1, self.x2), slice(self.y1 + 1, self.y2)
 
 
     #_____/ METHOD / .intersects(RectangularRoom)
     def intersects(self, other: RectangularRoom) -> bool:
-        ''' Pass in another 'RectangularRoom' instance and returns 'True' if this room overlaps it '''
+        '''
+        Pass in another 'RectangularRoom' instance and returns 'True' if this room overlaps it 
+        '''
         # Evaluate an expression to determine if 'True' or 'False' will be returned
         return (
             self.x1 <= other.x2
@@ -73,8 +81,9 @@ class RectangularRoom:
 #_______________________________________________________________________// FUNCTIONS
 
 def tunnel_between(start: Tuple[int, int], end: Tuple [int, int]) -> Iterator[Tuple[int, int]]:
-    ''' Return a List of coordinates (making an L-shaped "tunnel") between two given points.  '''
-
+    ''' 
+    Return a List of coordinates (making an L-shaped "tunnel") between two given points.  
+    '''
     x1, y1 = start
     x2, y2 = end
     
@@ -96,8 +105,9 @@ def tunnel_between(start: Tuple[int, int], end: Tuple [int, int]) -> Iterator[Tu
 
 
 def generate_static_dungeon(map_width, map_height, variation) -> GameMap:
-    ''' Generates a static pre-set dungeon map. Takes desired size and type. '''
-
+    ''' 
+    Generates a static pre-set dungeon map. Takes desired size and type. 
+    '''
     # Rooms in the dungeon (as GameMap instances)
     dungeon = GameMap(map_width, map_height)
     house = GameMap(map_width, map_height)
@@ -128,8 +138,9 @@ def generate_random_dungeon(
     map_height: int,
     player: Entity,
 ) -> GameMap:
-    ''' Generates a procedurally-built dungeon map. '''
-
+    ''' 
+    Generates a procedurally-built dungeon map. 
+    '''
     # Get the map width/height passed into the function and set a map instance with those dimensions.
     dungeon = GameMap(map_width, map_height)
 

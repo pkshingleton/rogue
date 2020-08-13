@@ -42,7 +42,10 @@ class Engine:
     #_____/ METHOD / .handle_events(events)
     # (Continuously loops through the events passed in by 'EventHandler' class from the 'input_handlers.py' module)
     def handle_events(self, events: Iterable[Any]) -> None:
-        ''' Takes an event from 'tcod.event', EventHandler returns an 'action', then the '.perform()' method is called to execute it.'''
+        ''' 
+        Takes an event from 'tcod.event', EventHandler returns an 'action',
+        Then the '.perform()' method is called to execute it.
+        '''
         for event in events:
             action = self.event_handler.dispatch(event)
 
@@ -55,11 +58,13 @@ class Engine:
 
     #_____/ METHOD / .render(console. context)
     def render(self, console: Console, context: Context) -> None:
-        ''' GameMap instance renders independently using its own .render() method. 
+        ''' 
+        GameMap instance renders independently using its own .render() method. 
 
-            Then A given set of entities is looped through and each one is added to the console. 
-            
-            Then 'tcod.context' displays the console to the screen. '''
+        Then A given set of entities is looped through and each one is added to the console. 
+
+        Then 'tcod.context' displays the console to the screen. 
+        '''
         self.game_map.render(console)
 
         for entity in self.entities:
