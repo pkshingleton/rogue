@@ -1,9 +1,7 @@
 '''
 Tiles are parts of the map that can be interacted with. They represent doors/pits/entrances, etc. 
-Some tiles can't be crossed (ie, walls) while others may do things like damage the player (fire, etc.)
-
-Tiles are generated with the 'procgen.py' module and passed to the GameMap class to be rendered by the engine.
-
+- Additional tile properties can be added for other effects ('does_damage = bool', etc.)
+- Tiles are generated with the 'procgen.py' module and passed to the GameMap class to be rendered by the engine.
 '''
 
 
@@ -64,6 +62,7 @@ brown       = (77, 72, 71)
 dark_brown  = (59, 56, 56)
 red         = (158, 75, 58)
 light_gray  = (114, 114, 117)
+gray        = (100, 100, 100)
 dark_gray   = (62, 62, 62)
 black       = (0 ,0, 0)         # Absolute black
 
@@ -95,7 +94,7 @@ floor_wood = new_tile(
 wall = new_tile(
     walkable        =False, 
     transparent     =False, 
-    dark            =(ord(" "), (255, 255, 255), light_gray),
+    dark            =(ord(" "), (255, 255, 255), gray),
 )
 
 

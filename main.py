@@ -11,7 +11,7 @@ import tcod
 from engine import Engine
 from entity import Entity
 from input_handlers import EventHandler
-from procgen import (generate_dungeon, generate_house)
+from procgen import (generate_static_dungeon, generate_random_dungeon)
 
 
 
@@ -24,6 +24,10 @@ def main() -> None:
 
     map_width       = 80
     map_height      = 45    # Leaves a 5-tile gap between bottom of map and bottom of screen (for text)
+
+    room_max_size   = 10    # Largest tile-size a room can be
+    room_min_size   = 6     # Smallest tile-size a room will be
+    max_rooms       = 30    # Total rooms that can occupy a single map
 
 
     # Use the root-level included font sprite sheet for characters
@@ -52,10 +56,19 @@ def main() -> None:
     entities = {npc, player}
 
 
-    #_____________// INSTANCE - MAPS
-    # Set the map/entity drawing areas
-    OUTDOOR_GARDEN = generate_dungeon(map_width, map_height)
-    INDOOR_HOUSE = generate_house(map_width, map_height)
+    #_____________// INSTANCE - GAME MAPS
+    # Static maps
+    OUTDOOR_GARDEN = generate_static_dungeon(map_width, map_height, 'dungeon')
+    INDOOR_HOUSE = generate_static_dungeon(map_width, map_height, 'house')
+    # Auto-generated map
+    DUNGEON_A = generate_random_dungeon(
+        max_rooms       = max_rooms,         
+        room_min_size   = room_min_size,     
+        room_max_size   = room_max_size,    
+        map_width       = map_width,         
+        map_height      = map_height,
+        player          = player,
+    )
 
 
     #_____________// INSTANCE - ENGINE
@@ -63,7 +76,7 @@ def main() -> None:
     engine = Engine(
         entities        = entities, 
         event_handler   = event_handler, 
-        game_map        = OUTDOOR_GARDEN, 
+        game_map        = DUNGEON_A,     # <-- Replace with whatever map needs to be loaded
         player          = player
     )
 
@@ -83,7 +96,7 @@ def main() -> None:
         root_console = tcod.Console(screen_width, screen_height, order="F")
 
         '''
-        >>> _____________// LOOP - MAIN GAME
+        >>> MAIN - GAME LOOP
         '''
         while True:
 

@@ -28,15 +28,15 @@ class Action:
         Perform this action with the objects needed to determine its scope 
         
         'engine' is the scope this action is being performed in.
-        'entity' is the object performing the action
+        'entity' is the object performing the action (player, npc, etc).
         
-        This method must be overridden by Action subclasses
+        This method gets overridden by Action subclasses (EscapeAction / MovementAction)
         '''
 
         raise NotImplementedError()
 
 
-# 'ESC' key to exit the game
+# 'ESC' key to exit the game (Subclass of 'Action')
 class EscapeAction(Action):
     
    #_____/ METHOD / .perform(engine, entity)
@@ -44,7 +44,7 @@ class EscapeAction(Action):
         raise SystemExit()
 
 
-# Movement keys to update palyer's coordinates
+# Movement keys to update palyer's coordinates (Subclass of 'Action')
 class MovementAction(Action):
     
     def __init__(self, dx: int, dy: int):

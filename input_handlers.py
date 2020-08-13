@@ -1,13 +1,13 @@
 '''
 The event handler takes a detected event and assigns a corresponding action "type".
 
-- If a 'KeyDown' event is detected:
+>>> If a 'KeyDown' event is detected:
     - And the key is a direction:
         > Set the action to 'movement' and include the appropriate coordinate values the class expects. 
     - And the key is 'ESC'
         > Set the action to 'escape' (for closing or backing out of menus) 
 
-- If a 'Quit' event is detected:
+>>> If a 'Quit' event is detected:
     > Close and exit the game
 
 '''

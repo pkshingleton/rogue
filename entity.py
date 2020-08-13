@@ -3,8 +3,8 @@ An 'entity' is any object that populates the game (AKA, the content).
 The 'Entity' class takes an x/y position, it's graphic/symbol, and color
 
 Method:
-    move(): Updates entity's x/y position with a new coordinates.
-    
+    Entity.move(): Updates entity's x/y position with a new set of coordinates (called after a successful 'move' action)
+
 '''
 
 
