@@ -5,6 +5,7 @@ I'm using the **[libtcod](https://github.com/libtcod/python-tcod)** library to e
 
 
 
+
 ## ____________________
 
 Following **[this tutorial](http://rogueliketutorials.com/tutorials/tcod/v2/)**, which has been updated to include newer Python 3 syntax and libtcod functions.
@@ -15,14 +16,25 @@ Following **[this tutorial](http://rogueliketutorials.com/tutorials/tcod/v2/)**,
 
 [Part 2](http://rogueliketutorials.com/tutorials/tcod/v2/part-2/): 'Entity', render functions, and the map.
 
--> **[Part 3](http://rogueliketutorials.com/tutorials/tcod/v2/part-3/)**: Generating a dungeon.
+[Part 3](http://rogueliketutorials.com/tutorials/tcod/v2/part-3/): Generating a dungeon.
+
+-> **[Part 4](http://rogueliketutorials.com/tutorials/tcod/v2/part-4/)**: FOV (field-of-view)
+
+
 
 
 ## ____________________
 
 ### Setup and Run:
 
-Requirements: (will add later)
+Requirements: 
+
+- tcod>=11.13
+
+- numpy>=1.18
+
+
+
 
 ### ----------
 In CLI or terminal, navigate to root directory of project and enter:
@@ -30,6 +42,8 @@ In CLI or terminal, navigate to root directory of project and enter:
     >> python rogue.py 
 
 The game will open in a new window.
+
+
 
 
 ## ____________________
