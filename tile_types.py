@@ -1,6 +1,8 @@
 '''
 Tiles are parts of the map that can be interacted with. They represent doors/pits/entrances, etc. 
+
 - Additional tile properties can be added for other effects ('does_damage = bool', etc.)
+
 - Tiles are generated with the 'procgen.py' module and passed to the GameMap class to be rendered by the engine.
 '''
 
@@ -64,8 +66,8 @@ def new_tile(
 
 #_______________________________________________________________________// VARIABLES (TUPLES)
 
-#'SHROUD' represents unexplored, unseen tiles
-SHROUD = np.array(ord(" "), (255, 255, 255), (0, 0, 0), dtype=graphic_symbol)
+#'SHROUD' represents unexplored, unseen tiles. 
+SHROUD = np.array((ord(" "), (255, 255, 255), (0, 0, 0)), dtype=graphic_symbol)
 
 # Colors for tiles (make this part of an external 'tile library')
 white       = (255, 255, 255)   

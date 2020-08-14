@@ -20,6 +20,7 @@ from typing import (Set, Iterable, Any)
 
 from tcod.context import Context
 from tcod.console import Console
+from tcod.map import compute_fov
 
 from entity import Entity
 from game_map import GameMap
@@ -37,6 +38,7 @@ class Engine:
         self.event_handler  = event_handler
         self.game_map       = game_map
         self.player         = player
+        self.update_fov() 
 
 
     #_____/ METHOD / .handle_events(events)
@@ -55,6 +57,26 @@ class Engine:
         
             action.perform(self, self.player)
 
+            self.update_fov()       # Updates player's FOV before their next action
+
+
+    #_____/ METHOD / .update_fov()
+    def update_fov(self) -> None:
+        ''' Recompute the visible area based on the player's point of view. '''
+
+        # Sets visibility of a tile based on tcod library's 'map.compute_fov()' method
+        #   "transparency"- uses a 2D numpy array where any non-zero values are considered transparent.  
+        #   "player.x, player.y" - the player's x/y point (character's POV)
+        #   "radius" - how far the FOV extends (in tiled spaces)
+        #   (https://python-tcod.readthedocs.io/en/latest/tcod/map.html#tcod.map.compute_fov)
+        self.game_map.visible[:] = compute_fov(
+            self.game_map.tiles["transparent"],
+            (self.player.x, self.player.y),
+            radius = 8
+        )
+        # If a tile is "visible", it must have been "explored" (so add the 'visible' array to the 'explored' array)
+        self.game_map.explored |= self.game_map.visible
+
 
     #_____/ METHOD / .render(console. context)
     def render(self, console: Console, context: Context) -> None:
@@ -68,7 +90,9 @@ class Engine:
         self.game_map.render(console)
 
         for entity in self.entities:
-            console.print(entity.x, entity.y, entity.char, fg=entity.color)
+            # Only print entities that are in FOV
+            if self.game_map.visible[entity.x, entity.y]:
+                console.print(entity.x, entity.y, entity.char, fg=entity.color)
 
         context.present(console)
         console.clear()

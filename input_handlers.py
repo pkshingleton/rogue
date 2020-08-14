@@ -23,6 +23,11 @@ from actions import (Action, EscapeAction, MovementAction)
 #_______________________________________________________________________// CLASSES
 # (Extends the tcod 'EventDispatch' class - Listens for pre-set events and return an 'action')
 class EventHandler(tcod.event.EventDispatch[Action]):
+    ''' 
+    Takes 'tcod.event.EventDispatch'event and returns an 'action' depending on the event.
+    
+    - KeyDown events result in 'MovementAction' or 'EscapeAction'
+    '''
 
     #_____/ METHOD / .ev_quit(tcod.event.Quit)
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
