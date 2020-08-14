@@ -64,6 +64,9 @@ def new_tile(
 
 #_______________________________________________________________________// VARIABLES (TUPLES)
 
+#'SHROUD' represents unexplored, unseen tiles
+SHROUD = np.array(ord(" "), (255, 255, 255), (0, 0, 0), dtype=graphic_symbol)
+
 # Colors for tiles (make this part of an external 'tile library')
 white       = (255, 255, 255)   
 dark_blue   = (50, 50, 150)
@@ -78,10 +81,6 @@ light_gray  = (114, 114, 117)
 gray        = (100, 100, 100)
 dark_gray   = (62, 62, 62)
 black       = (0 ,0, 0)         
-
-
-# 'SHROUD' represents unexplored, unseen tiles
-SHROUD = np.array(ord(" "), (255, 255, 255), (0, 0, 0), dtype=graphic_symbol)
 
 
 
