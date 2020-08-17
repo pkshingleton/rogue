@@ -92,14 +92,14 @@ grass = new_tile(
     walkable        =True, 
     transparent     =True, 
     dark            =(ord("`"), green, dark_green),
-    light           =(ord("`"), green, green), # No difference when explored
+    light           =(ord("`"), light_green, green), # No difference when explored
 )
 
 dirt = new_tile(
     walkable        =True,
     transparent     =True,
-    dark            =(ord("."), green, brown),
-    light           =(ord("."), green, brown),
+    dark            =(ord(" "), dark_gray, dark_brown),
+    light           =(ord("."), gray, brown),
 )
 
 floor_wood = new_tile(
