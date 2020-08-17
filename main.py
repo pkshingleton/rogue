@@ -7,9 +7,10 @@ Drawing/rendering occurs by updating the state of the console, and then printing
 
 #_______________________________________________________________________// MODULES
 import tcod 
+import copy
 
 from engine import Engine
-from entity import Entity
+import entity_factories
 from input_handlers import EventHandler
 from procgen import (generate_static_dungeon, generate_random_dungeon)
 
@@ -29,6 +30,7 @@ def main() -> None:
     room_min_size   = 6     # Smallest tile-size a room will be
     max_rooms       = 30    # Total rooms that can occupy a single map
 
+    max_enemies    = 2     # The most monsters/enemies that can appear in a single room
 
     # Use the root-level included font sprite sheet for characters
     tileset = tcod.tileset.load_tilesheet(
@@ -39,21 +41,8 @@ def main() -> None:
     event_handler = EventHandler()
 
 
-    #_____________// DATA (TUPLES) - ENTITIES
-    # (entities require: x/y coordinates, symbol, and color)
-    player  = Entity(
-        int(screen_width / 2), 
-        int(screen_height / 2), 
-        "@", (255,255,255)
-    )
-    npc     = Entity(
-        int(screen_width / 2-5), 
-        int(screen_height / 2), 
-        "@", (255,255,0)
-    )
-
-    # Place the entities into a set so they can be passed into the engine
-    entities = {npc, player}
+    #_____________// DATA (TUPLES) - PLAYER (ENTITY)
+    player = copy.deepcopy(entity_factories.player)
 
 
     #_____________// INSTANCE - GAME MAPS
@@ -67,6 +56,7 @@ def main() -> None:
         room_max_size   = room_max_size,    
         map_width       = map_width,         
         map_height      = map_height,
+        max_enemies     = max_enemies,
         player          = player,
     )
 
@@ -74,7 +64,6 @@ def main() -> None:
     #_____________// INSTANCE - ENGINE
     # Engine class returns actions from events, takes a map of tiles, and prints them to the console along with the player and other entities.
     engine = Engine(
-        entities        = entities, 
         event_handler   = event_handler, 
         game_map        = DUNGEON_A,     # <-- Replace with whatever map needs to be loaded
         player          = player

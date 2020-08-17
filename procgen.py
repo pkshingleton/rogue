@@ -19,8 +19,10 @@ from typing import (Iterator, Tuple, List, TYPE_CHECKING)
 import random
 import tcod
 
+import entity_factories
 from game_map import GameMap
 import tile_types
+
 
 # Conditional module
 if TYPE_CHECKING:
@@ -80,6 +82,29 @@ class RectangularRoom:
 
 #_______________________________________________________________________// FUNCTIONS
 
+def place_entities(
+    room:           RectangularRoom,
+    dungeon:        GameMap,
+    max_enemies:    int
+) -> None:
+    # Take the most enemies allowed in one room at a time and set a random number of them
+    number_of_enemies = random.randint(0, max_enemies)
+
+    # Iterate through that random number of ememies (up to value set for 'max_enemies')
+    for i in range(number_of_enemies):
+        # Give the enemy a random starting location
+        x = random.randint(room.x1 + 1, room.x2 - 1)
+        y = random.randint(room.y1 + 1, room.y2 - 1)
+
+        # Check there aren't any other enemies at that location (prevents getting a stack of enemies)
+        if not any(entity.x == x and entity.y == y for entity in dungeon.entities):
+            if random.random() < 0.8:
+                entity_factories.orc.spawn(dungeon, x, y)
+            else:
+                entity_factories.troll.spawn(dungeon, x, y)
+
+
+
 def tunnel_between(start: Tuple[int, int], end: Tuple [int, int]) -> Iterator[Tuple[int, int]]:
     ''' 
     Return a List of coordinates (making an L-shaped "tunnel") between two given points.  
@@ -131,18 +156,19 @@ def generate_static_dungeon(map_width, map_height, variation) -> GameMap:
 
 
 def generate_random_dungeon(
-    max_rooms: int,         
-    room_min_size: int,     
-    room_max_size: int,    
-    map_width: int,         
-    map_height: int,
-    player: Entity,
+    max_rooms:      int,         
+    room_min_size:  int,     
+    room_max_size:  int,    
+    map_width:      int,         
+    map_height:     int,
+    max_enemies:    int,
+    player:         Entity,
 ) -> GameMap:
     ''' 
     Generates a procedurally-built dungeon map. 
     '''
     # Get the map width/height passed into the function and set a map instance with those dimensions.
-    dungeon = GameMap(map_width, map_height)
+    dungeon = GameMap(map_width, map_height, entities=[player])
 
     # Set a typed List to hold all the generated room instances (reference/key is 'rooms')
     rooms: List[RectangularRoom] = []
@@ -177,6 +203,8 @@ def generate_random_dungeon(
             for x, y in tunnel_between(rooms[-1].center, new_room.center):
                 # Set the tiling for the tunnel
                 dungeon.tiles[x, y] = tile_types.dirt
+
+        place_entities(new_room, dungeon, max_enemies)
             
         # Add the new room to the list of other rooms
         rooms.append(new_room)

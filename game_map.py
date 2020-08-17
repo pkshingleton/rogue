@@ -7,24 +7,30 @@ The default-filled wall tiles are "dug out" by the 'procgen.py' module's dungeon
 
 
 #_______________________________________________________________________// MODULES
+from __future__ import annotations
+from typing import (Iterable, TYPE_CHECKING)
 import numpy as np
 from tcod.console import Console
 
 import tile_types
 
-
+if TYPE_CHECKING:
+    from entity import Entity
 
 #_______________________________________________________________________// CLASS
 class GameMap:
     '''
-    Takes width and height values and fills the area with wall tiles. 
+    Takes width/height values, and fills that area with default wall tiles. 
+    Includes properties for 'visible' and 'explored' areas which are referenced in the .render() method to determine the tile states.  
     '''
 
     # Initialize
-    def __init__(self, width: int, height: int):
+    def __init__(self, width: int, height: int, entities: Iterable[Entity] = ()):
         # Map dimensions
         self.width, self.height = width, height
-        # Fill area
+        # Creates a a Set of Entity class instances (passed in as an iterable object)
+        self.entities = set(entities)
+        # Fill area with wall tiles by default. 
         self.tiles = np.full((width, height), fill_value=tile_types.wall, order="F")
         # Different states the tiles can be rendered in
         self.visible = np.full((width, height), fill_value=False, order="F")
@@ -55,6 +61,16 @@ class GameMap:
             choicelist = [self.tiles["light"], self.tiles["dark"]],
             default = tile_types.SHROUD
         )
+        # Iterate through the entities set and set each one to the console state.
+        # (Entities will only be set if the map area they're supposed to be contains 'visible' tiles.)
+        for entity in self.entities:
+            if self.visible[entity.x, entity.y]:
+                console.print(
+                    x       = entity.x, 
+                    y       = entity.y, 
+                    string  = entity.char, 
+                    fg      = entity.color
+                )
     
 
     

@@ -9,7 +9,16 @@ Method:
 
 
 #_______________________________________________________________________// MODULES
-from typing import Tuple
+from __future__ import annotations
+import copy
+from typing import (Tuple, TypeVar, TYPE_CHECKING)
+
+if TYPE_CHECKING:
+    from game_map import GameMap
+
+
+# The 'Troll' enemy
+T = TypeVar("T", bound="Entity")
 
 
 
@@ -18,14 +27,32 @@ from typing import Tuple
 class Entity:
 
     # Initialization
-    def __init__(self, x: int, y: int, char: str, color: Tuple[int, int, int]):
-        # x/y - entity's position
-        # char - its symbol/sprite
-        # color - an RGB color value
+    def __init__(
+        # Set initial values
+        self, 
+        x: int = 0,                                     # x/y   - entity's position
+        y: int = 0,     
+        char: str = "?",                                # char  - its symbol/sprite
+        color: Tuple[int, int, int] = (255, 255, 255),  # color - an RGB color value
+        name: str = "<Unnamed>",                        # name  - references the entity
+        blocks_movement: bool = False,                  # Walkable or not (enemies aren't, items and NPCs are)
+    ):
         self.x = x
         self.y = y
         self.char = char
         self.color = color
+        self.name = name
+        self.blocks_movement = blocks_movement
+
+
+    #_____/ METHOD / .spawn(self, gamemap, x, y)
+    def spawn(self: T, gamemap: GameMap, x: int, y:int) -> T:
+        ''' Spawn a copy of this instance at a given location. '''
+        clone = copy.deepcopy(self)
+        clone.x = x
+        clone.y = y
+        gamemap.entities.add(clone)
+        return clone
 
 
     #_____/ METHOD / .move(dx, dy)

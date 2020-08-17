@@ -33,8 +33,8 @@ class Engine:
 
     # Initialize
     # (Expects a set of entities, an event handler, a map, and a separate reference to the player entity)
-    def __init__(self, entities: Set[Entity], event_handler: EventHandler, game_map: GameMap, player: Entity):
-        self.entities       = entities
+    def __init__(self, event_handler: EventHandler, game_map: GameMap, player: Entity):
+        # The engine listens for events and updates the game map and player state (location and FOV) accordingly.
         self.event_handler  = event_handler
         self.game_map       = game_map
         self.player         = player
@@ -82,17 +82,10 @@ class Engine:
     def render(self, console: Console, context: Context) -> None:
         ''' 
         GameMap instance renders independently using its own .render() method. 
-
-        Then A given set of entities is looped through and each one is added to the console. 
-
         Then 'tcod.context' displays the console to the screen. 
         '''
         self.game_map.render(console)
 
-        for entity in self.entities:
-            # Only print entities that are in FOV
-            if self.game_map.visible[entity.x, entity.y]:
-                console.print(entity.x, entity.y, entity.char, fg=entity.color)
 
         context.present(console)
         console.clear()
