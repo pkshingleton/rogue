@@ -7,8 +7,10 @@ The default-filled wall tiles are "dug out" by the 'procgen.py' module's dungeon
 
 
 #_______________________________________________________________________// MODULES
+
 from __future__ import annotations
-from typing import (Iterable, TYPE_CHECKING)
+from typing import (Iterable, Optional, TYPE_CHECKING)
+
 import numpy as np
 from tcod.console import Console
 
@@ -17,7 +19,10 @@ import tile_types
 if TYPE_CHECKING:
     from entity import Entity
 
+
+
 #_______________________________________________________________________// CLASS
+
 class GameMap:
     '''
     Takes width/height values, and fills that area with default wall tiles. 
@@ -35,7 +40,17 @@ class GameMap:
         # Different states the tiles can be rendered in
         self.visible = np.full((width, height), fill_value=False, order="F")
         self.explored = np.full((width, height), fill_value=False, order="F")
-                                              
+
+
+    #_____/ METHOD / .get_blocking_enemy_at_location(x, y)
+    def get_blocking_entity_at_location(self, location_x:int, location_y:int) -> Optional[Entity]:
+        # Iterate through all entities to find one occupying the given location AND has "blocks_movement = True"
+        for entity in self.entities:
+            if entity.blocks_movement and entity.x == location_x and entity.y == location_y:
+                # If an entity meets the criteria, return it
+                return entity
+        return None
+
 
     #_____/ METHOD / .in_bounds(x, y)
     # Takes an x/y position and checks if it's within the boundaries of the map (true/false)
@@ -50,19 +65,24 @@ class GameMap:
     # Sends tiles to the console to be drawn (rendered)
     def render(self, console: Console) -> None:
         ''' 
-        Renders the map (apart from everything else in the main console, like entities). 
+        Sets tiles and entities to the map. 
         
-        If the tile is in the "visible" array, draw it with the 'light' color.
-        If it isn't, but it's been 'explored', draw it with the 'dark' color.
-        If tile is unexplored, default to "SHROUD".
+        - If the tile is in the "visible" array, draw it with the 'light' color.
+        - If it isn't, but it's been 'explored', draw it with the 'dark' color.
+        - If tile is unexplored, default to "SHROUD".
+
+        Tiles are sorted into Lists:
+            - 'condlist': Tiles can be both visible AND explored, so they make up a parent list of conditional states.
+            - 'choicelist': Tiles in either of the two color states (sorted depending on FOV calculations).
+            - 'default': Any tiles not in the above lists are effectively unexplored. They will render as 'SHROUD' 
         '''
         console.tiles_rgb[0:self.width, 0:self.height] = np.select(
-            condlist = [self.visible, self.explored],
-            choicelist = [self.tiles["light"], self.tiles["dark"]],
-            default = tile_types.SHROUD
+            # Lists to determine tile appearance
+            condlist    = [self.visible, self.explored],                
+            choicelist  = [self.tiles["light"], self.tiles["dark"]],    
+            default     = tile_types.SHROUD                             
         )
-        # Iterate through the entities set and set each one to the console state.
-        # (Entities will only be set if the map area they're supposed to be contains 'visible' tiles.)
+        # Iterate through the Set of entities and add each one to the console if it exists in a 'visible' area of the map.
         for entity in self.entities:
             if self.visible[entity.x, entity.y]:
                 console.print(
@@ -72,5 +92,7 @@ class GameMap:
                     fg      = entity.color
                 )
     
+
+
 
     

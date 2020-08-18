@@ -1,10 +1,11 @@
 '''
 Actions are used by the input event handler for returning an outcome (action) based on a detected event.
 
-'Movement' action takes two values. When this action type is returned to the engine, the values become x/y coordinates which offset the position of whatever is supposed to be moving (usually the player sprite).
-
-'Escape' action is used for exiting menus or closing things.
-
+- ActionWithDirection: Adds x/y values to the base Action class for storing directional movement.
+- MovementAction: Checks for valid movement conditions and calls the invoking entity's '.move()' method to update its position on a map.
+- BumpAction: Determines if the successive Action will be a 'MeleeAction' or a 'MovementAction'
+- MeleeAction: Attack an entity on an adjacent tile and handle damage/effects.
+- EscapeAction: Terminates the game.
 '''
 
 
@@ -19,59 +20,108 @@ if TYPE_CHECKING:
 
 
 #_______________________________________________________________________// CLASSES
+
 # Base class 
 class Action:
     
-    # Passes the engine and the entity performing the action 
-    def perform(self, engine: Engine, entity: Entity) -> None:
+    def perform(self, engine:Engine, entity:Entity) -> None:
         ''' 
-        Perform this action with the objects needed to determine its scope 
+        Takes two objects (instances of the "Engine" class and "Entity" class)
         
         'engine' is the scope this action is being performed in.
         'entity' is the object performing the action (player, npc, etc).
         
-        This method gets overridden by Action subclasses (EscapeAction / MovementAction)
+        This method is overridden by other subclasses (EscapeAction, MovementAction, etc.)
         '''
-
         raise NotImplementedError()
 
 
-# 'ESC' key to exit the game (Subclass of 'Action')
+
 class EscapeAction(Action):
-    
-   #_____/ METHOD / .perform(engine, entity)
-    def perform(self, engine: Engine, entity: Entity) -> None:
+    ''' Close program / quit the game '''
+    def perform(self, engine:Engine, entity:Entity) -> None:
         raise SystemExit()
 
 
-# Movement keys to update palyer's coordinates (Subclass of 'Action')
-class MovementAction(Action):
-    
-    def __init__(self, dx: int, dy: int):
-        super().__init__()
 
-        # Direction of travel. Used to calculate entity's new position after a successful move action.
-        # (ie, the return value for 'EventHandler.ev_keydown' event)
+class ActionWithDirection(Action):
+    ''' 
+    Inherits/extends the 'Action' class by setting values for assessing direction/movement. 
+
+    This yields sub-classes that determine WHAT the direciton/movement invokes.
+    '''
+    def __init__(self, dx:int, dy:int):
+        super().__init__()
+        # Direction of travel
         self.dx = dx
         self.dy = dy
 
+    def perform(self, engine:Engine, entity:Entity) -> None:
+        raise NotImplementedError()
 
-    #_____/ METHOD / .perform(engine, entity)
-    # Checks the entity is landing on a walkable tile and not out of map bounds
-    def perform(self, engine: Engine, entity: Entity) -> None:
 
-        # Destination is the entity's current position + direction of travel
+
+class MeleeAction(ActionWithDirection):
+    '''
+    Extends the 'ActionWithDirection' class to damage an entity in an adjacent tile (ie, 'melee attack').
+
+    Takes the direction of travel (dx/dy) and attacks an entity in the way (if an entity occupies the destination tile).
+    '''
+    def perform(self, engine:Engine, entity:Entity) -> None:
+        # Current position + direction of travel = destination x/y
+        dest_x = entity.x + self.dx
+        dest_y = entity.y + self.dy
+        # Store the returned entity object (if any)
+        target = engine.game_map.get_blocking_entity_at_location(dest_x, dest_y)
+
+        # If return was 'None' (no entity found matching the function's criteria), no attack happens.
+        if not target:
+            return
+
+        print(f"You kick the {target.name}! *POW*")
+
+
+
+class MovementAction(ActionWithDirection):
+    ''' 
+    Extends 'ActionWithDirection' class for updating an entity's position on the map. 
+
+    Checks the entity is landing on a walkable tile, not out of map bounds, and not being blocked by another entity. 
+    If so, call the entity's .move() method (which calculates the new tile to move to).
+    '''
+    def perform(self, engine:Engine, entity:Entity) -> None:
+        # Current position + direction of travel = destination x/y
         dest_x = entity.x + self.dx
         dest_y = entity.y + self.dy
 
-        # Check if entity's next move is out of bounds (True = no move)
+        # Check if entity's next move is out of bounds:
         if not engine.game_map.in_bounds(dest_x, dest_y):
             return 
-
-        # Check if entity's next move is on a walkable tile (True = no move)
+        # Check if entity's next move is NOT on a walkable tile:
         if not engine.game_map.tiles["walkable"][dest_x, dest_y]:
             return 
+        # Pass this entity's destination x/y to a function that checks no other entities are occupying the target space.
+        # If an entity is returned (found matching criteria), set the entity at the destination coordinates (block player)
+        if engine.game_map.get_blocking_entity_at_location(dest_x, dest_y):
+            return 
 
-        # Otherwise, update entity's position (completes the move action).
+        # If everything checks ok, call the entity's '.move()' method
         entity.move(self.dx, self.dy)
 
+
+
+class BumpAction(ActionWithDirection):
+    '''
+    Extends 'ActionWithDirection' class to determine which action occurs next: 'MovementAction' or 'MeleeAction
+    '''
+    def perform(self, engine:Engine, entity:Entity) -> None:
+        # Current position + direction of travel = destination x/y
+        dest_x = entity.x + self.dx 
+        dest_y = entity.y + self.dy
+
+        # Calls a GameMap method to check if the entity is being blocked by another.
+        if engine.game_map.get_blocking_entity_at_location(dest_x, dest_y):
+            return MeleeAction(self.dx, self.dy).perform(engine, entity)
+
+        else:
+            return MovementAction(self.dx, self.dy).perform(engine, entity)

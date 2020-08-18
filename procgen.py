@@ -14,6 +14,7 @@ The class takes starting and ending coordinates and defines a "room" area for ti
 
 
 #_______________________________________________________________________// MODULES
+
 from __future__ import annotations
 from typing import (Iterator, Tuple, List, TYPE_CHECKING)
 import random
@@ -23,7 +24,6 @@ import entity_factories
 from game_map import GameMap
 import tile_types
 
-
 # Conditional module
 if TYPE_CHECKING:
     from entity import Entity
@@ -31,6 +31,7 @@ if TYPE_CHECKING:
 
 
 #_______________________________________________________________________// CLASSES
+
 class RectangularRoom:
     ''' 
     Defines an area on a map to be filled with tiles. 
@@ -87,27 +88,31 @@ def place_entities(
     dungeon:        GameMap,
     max_enemies:    int
 ) -> None:
+    '''
+    Takes a room, a map, and total enemies allowed per room, then sets a random number of enemies down in the given room.
+    '''
     # Take the most enemies allowed in one room at a time and set a random number of them
     number_of_enemies = random.randint(0, max_enemies)
 
-    # Iterate through that random number of ememies (up to value set for 'max_enemies')
     for i in range(number_of_enemies):
-        # Give the enemy a random starting location
+        # Give the enemy random starting coordinates
         x = random.randint(room.x1 + 1, room.x2 - 1)
         y = random.randint(room.y1 + 1, room.y2 - 1)
 
-        # Check there aren't any other enemies at that location (prevents getting a stack of enemies)
+        # Check for any other enemies at that coordinate location (prevents getting a stack of enemies)
         if not any(entity.x == x and entity.y == y for entity in dungeon.entities):
             if random.random() < 0.8:
+                # 80% chance of spawning an Orc
                 entity_factories.orc.spawn(dungeon, x, y)
             else:
+                # 20% chance of spawning a Troll
                 entity_factories.troll.spawn(dungeon, x, y)
 
 
 
 def tunnel_between(start: Tuple[int, int], end: Tuple [int, int]) -> Iterator[Tuple[int, int]]:
     ''' 
-    Return a List of coordinates (making an L-shaped "tunnel") between two given points.  
+    Return a List of coordinates (making an L-shaped "tunnel") between two given points. 
     '''
     x1, y1 = start
     x2, y2 = end

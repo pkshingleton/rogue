@@ -2,7 +2,9 @@
 Stores all the entities that can be placed on a map. Includes player, NPCs (shopkeepers, etc.) and enemies.
 '''
 
+
 #_______________________________________________________________________// MODULES
+
 from entity import Entity
 
 

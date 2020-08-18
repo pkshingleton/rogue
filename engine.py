@@ -16,6 +16,7 @@ The engine "render" function in sequence:
 
 
 #_______________________________________________________________________// MODULES
+
 from typing import (Set, Iterable, Any)
 
 from tcod.context import Context
@@ -29,6 +30,7 @@ from input_handlers import EventHandler
 
 
 #_______________________________________________________________________// CLASS
+
 class Engine:
 
     # Initialize
@@ -41,7 +43,11 @@ class Engine:
         self.update_fov() 
 
 
-    #_____/ METHOD / .handle_events(events)
+    def handle_enemy_turns(self)-> None:
+        for entity in self.game_map.entities - {self.player}:
+            print(f'The {entity.name} when it will get to take a turn...')
+
+
     # (Continuously loops through the events passed in by 'EventHandler' class from the 'input_handlers.py' module)
     def handle_events(self, events: Iterable[Any]) -> None:
         ''' 
@@ -56,14 +62,12 @@ class Engine:
                 continue
         
             action.perform(self, self.player)
+            self.handle_enemy_turns()
+            self.update_fov()               # Updates player's FOV before their next action
 
-            self.update_fov()       # Updates player's FOV before their next action
 
-
-    #_____/ METHOD / .update_fov()
     def update_fov(self) -> None:
         ''' Recompute the visible area based on the player's point of view. '''
-
         # Sets visibility of a tile based on tcod library's 'map.compute_fov()' method
         #   "transparency"- uses a 2D numpy array where any non-zero values are considered transparent.  
         #   "player.x, player.y" - the player's x/y point (character's POV)
@@ -78,14 +82,12 @@ class Engine:
         self.game_map.explored |= self.game_map.visible
 
 
-    #_____/ METHOD / .render(console. context)
     def render(self, console: Console, context: Context) -> None:
         ''' 
         GameMap instance renders independently using its own .render() method. 
         Then 'tcod.context' displays the console to the screen. 
         '''
         self.game_map.render(console)
-
 
         context.present(console)
         console.clear()

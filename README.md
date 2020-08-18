@@ -20,7 +20,9 @@ Following **[this tutorial](http://rogueliketutorials.com/tutorials/tcod/v2/)**,
 
 [Part 4](http://rogueliketutorials.com/tutorials/tcod/v2/part-4/): FOV (field-of-view)
 
--> **[Part 5](http://rogueliketutorials.com/tutorials/tcod/v2/part-5/)**: Placing enemies and a combat action.
+[Part 5](http://rogueliketutorials.com/tutorials/tcod/v2/part-5/): Placing enemies and a combat action.
+
+-> **[Part 6](http://rogueliketutorials.com/tutorials/tcod/v2/part-6/)**: Handling damage.
 
 
 

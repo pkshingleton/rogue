@@ -8,12 +8,14 @@ Tiles are parts of the map that can be interacted with. They represent doors/pit
 
 
 #_______________________________________________________________________// MODULES
+
 from typing import Tuple
 import numpy as np
 
 
 
 #_______________________________________________________________________// DATA (TYPES)
+
 # Structures the datatype for tile graphics (Using Numpy datatypes/dtype)
 
 # This is for the "dark" property of the of the tile_datatype
@@ -38,6 +40,7 @@ tile_datatype = np.dtype(
 
 
 #_______________________________________________________________________// FUNCTION
+
 # Pass in values to return an array - renders as a tile on the game map
 def new_tile(
     *,                          # Enforces keyword usage so parameter order doesn't matter
@@ -91,15 +94,15 @@ black       = (0 ,0, 0)
 grass = new_tile(
     walkable        =True, 
     transparent     =True, 
-    dark            =(ord("`"), green, dark_green),
+    dark            =(ord(" "), green, dark_green),
     light           =(ord("`"), light_green, green), # No difference when explored
 )
 
 dirt = new_tile(
     walkable        =True,
     transparent     =True,
-    dark            =(ord(" "), dark_gray, dark_brown),
-    light           =(ord("."), gray, brown),
+    dark            =(ord(" "), dark_brown, dark_brown),
+    light           =(ord("."), dark_brown, brown),
 )
 
 floor_wood = new_tile(
@@ -112,8 +115,8 @@ floor_wood = new_tile(
 wall = new_tile(
     walkable        =False, 
     transparent     =False, 
-    dark            =(ord(" "), white, dark_gray),
-    light           =(ord(" "), white, gray)
+    dark            =(ord(" "), dark_gray, dark_gray),
+    light           =(ord(" "), gray, gray)
 )
 
 

@@ -9,6 +9,7 @@ Method:
 
 
 #_______________________________________________________________________// MODULES
+
 from __future__ import annotations
 import copy
 from typing import (Tuple, TypeVar, TYPE_CHECKING)
@@ -17,12 +18,16 @@ if TYPE_CHECKING:
     from game_map import GameMap
 
 
+
+#_______________________________________________________________________// DECLARATION
+
 # The 'Troll' enemy
 T = TypeVar("T", bound="Entity")
 
 
 
 #_______________________________________________________________________// CLASSES
+
 # The generic object that represents players, enemies, items, etc.
 class Entity:
 
@@ -47,7 +52,9 @@ class Entity:
 
     #_____/ METHOD / .spawn(self, gamemap, x, y)
     def spawn(self: T, gamemap: GameMap, x: int, y:int) -> T:
-        ''' Spawn a copy of this instance at a given location. '''
+        ''' 
+        Spawn a copy of this instance at a given location. 
+        '''
         clone = copy.deepcopy(self)
         clone.x = x
         clone.y = y

@@ -6,6 +6,7 @@ Drawing/rendering occurs by updating the state of the console, and then printing
 
 
 #_______________________________________________________________________// MODULES
+
 import tcod 
 import copy
 
@@ -17,14 +18,15 @@ from procgen import (generate_static_dungeon, generate_random_dungeon)
 
 
 #_______________________________________________________________________// FUNCTION
+
 def main() -> None:
 
-    # Set default window screen size in tiles (will move into JSON 'settings' file later)
+    # Starting / default values
     screen_width    = 80
     screen_height   = 50
 
     map_width       = 80
-    map_height      = 45    # Leaves a 5-tile gap between bottom of map and bottom of screen (for text)
+    map_height      = 45    # -5 for a space between bottom of map and screen (for text area)
 
     room_max_size   = 10    # Largest tile-size a room can be
     room_min_size   = 6     # Smallest tile-size a room will be
@@ -32,23 +34,24 @@ def main() -> None:
 
     max_enemies    = 2     # The most monsters/enemies that can appear in a single room
 
+
     # Use the root-level included font sprite sheet for characters
     tileset = tcod.tileset.load_tilesheet(
         "dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD
     )
 
-    # Sets instance of the 'EventHandler' class - receives and processes events
+
+    # Sets instance of the 'EventHandler' class for taking user input
     event_handler = EventHandler()
 
-
-    #_____________// DATA (TUPLES) - PLAYER (ENTITY)
+    # Instance of the 'player' entity
     player = copy.deepcopy(entity_factories.player)
 
 
-    #_____________// INSTANCE - GAME MAPS
     # Static maps
     OUTDOOR_GARDEN = generate_static_dungeon(map_width, map_height, 'dungeon')
     INDOOR_HOUSE = generate_static_dungeon(map_width, map_height, 'house')
+
     # Auto-generated map
     DUNGEON_A = generate_random_dungeon(
         max_rooms       = max_rooms,         
@@ -60,9 +63,7 @@ def main() -> None:
         player          = player,
     )
 
-
-    #_____________// INSTANCE - ENGINE
-    # Engine class returns actions from events, takes a map of tiles, and prints them to the console along with the player and other entities.
+    # Instantiate the Engine class - parses events, renders the map (tiles + entities), and updates the player entity
     engine = Engine(
         event_handler   = event_handler, 
         game_map        = DUNGEON_A,     # <-- Replace with whatever map needs to be loaded
@@ -70,15 +71,13 @@ def main() -> None:
     )
 
 
-    #_____________// CANVAS (CONSOLE RENDER AREA)
+    # Terminal/canvas: main state that gets continually updated and re-drawn. 
     with tcod.context.new_terminal(
-
         screen_width,
         screen_height,
         tileset  = tileset,
         title    = "Rogue",
         vsync    = True,
-
     ) as context:
 
         # (Numpy array default is [y/x] - 'F' reverses the read order to [x/y] which is more conventional)
@@ -94,6 +93,7 @@ def main() -> None:
 
             # Await user input/event and store it
             events = tcod.event.wait()
+            
             # Pass stored event to the engine's event handler
             engine.handle_events(events)
 
