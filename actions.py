@@ -9,8 +9,10 @@ Actions are used by the input event handler for returning an outcome (action) ba
 '''
 
 
+#_______________________________________________________________________// MODULES
+
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import (Optional, Tuple, TYPE_CHECKING)
 
 # Conditional modules
 if TYPE_CHECKING:
@@ -23,13 +25,26 @@ if TYPE_CHECKING:
 
 # Base class 
 class Action:
+
+    def __init__(self, entity: Entity) -> None:
+        super().__init__()
+        self.entity = entity
+
+
+    @property
+    def engine(self) -> Engine:
+        '''
+        Returns the engine instance this action belongs to (set in 'entity.gamemap.engine'), and sets the engine as a property.
+        '''
+        return self.entity.gamemap.engine
+
     
-    def perform(self, engine:Engine, entity:Entity) -> None:
+    def perform(self) -> None:
         ''' 
         Takes two objects (instances of the "Engine" class and "Entity" class)
         
-        'engine' is the scope this action is being performed in.
-        'entity' is the object performing the action (player, npc, etc).
+        'self.engine' is the scope this action is being performed in.
+        'self.entity' is the object performing the action (player, npc, etc).
         
         This method is overridden by other subclasses (EscapeAction, MovementAction, etc.)
         '''
@@ -39,7 +54,8 @@ class Action:
 
 class EscapeAction(Action):
     ''' Close program / quit the game '''
-    def perform(self, engine:Engine, entity:Entity) -> None:
+
+    def perform(self) -> None:
         raise SystemExit()
 
 
@@ -50,13 +66,29 @@ class ActionWithDirection(Action):
 
     This yields sub-classes that determine WHAT the direciton/movement invokes.
     '''
-    def __init__(self, dx:int, dy:int):
-        super().__init__()
+
+    def __init__(self, entity: Entity, dx: int, dy: int):
+        super().__init__(entity)
         # Direction of travel
         self.dx = dx
         self.dy = dy
 
-    def perform(self, engine:Engine, entity:Entity) -> None:
+
+    @property
+    def dest_xy(self) -> Tuple[int, int]:
+        ''' Returns this actions destination as a property. '''
+        return self.entity.x + self.dx, self.entity.y + self.dy
+
+
+    @property
+    def blocking_entity(self) -> Optional[Entity]:
+        '''
+        Returns an entity blocking the player at this actions destination, and sets that entity as a property.
+        '''
+        return self.engine.game_map.get_blocking_entity_at_location(*self.dest_xy)
+
+
+    def perform(self) -> None:
         raise NotImplementedError()
 
 
@@ -67,17 +99,14 @@ class MeleeAction(ActionWithDirection):
 
     Takes the direction of travel (dx/dy) and attacks an entity in the way (if an entity occupies the destination tile).
     '''
-    def perform(self, engine:Engine, entity:Entity) -> None:
-        # Current position + direction of travel = destination x/y
-        dest_x = entity.x + self.dx
-        dest_y = entity.y + self.dy
-        # Store the returned entity object (if any)
-        target = engine.game_map.get_blocking_entity_at_location(dest_x, dest_y)
 
+    def perform(self) -> None:
+        ''' Uses the inherited 'blocking_entity' property (defined in 'ActionWithDirection' class) to commit an attack. '''
+        target = self.blocking_entity
         # If return was 'None' (no entity found matching the function's criteria), no attack happens.
         if not target:
             return
-
+        # Text message to appear in console
         print(f"You kick the {target.name}! *POW*")
 
 
@@ -89,39 +118,35 @@ class MovementAction(ActionWithDirection):
     Checks the entity is landing on a walkable tile, not out of map bounds, and not being blocked by another entity. 
     If so, call the entity's .move() method (which calculates the new tile to move to).
     '''
-    def perform(self, engine:Engine, entity:Entity) -> None:
-        # Current position + direction of travel = destination x/y
-        dest_x = entity.x + self.dx
-        dest_y = entity.y + self.dy
 
+    def perform(self) -> None:
+        ''' Commit this entity's movement to a destination by calling 'self.entity.move(dx, dy)' '''
+        dest_x, dest_y = self.dest_xy
         # Check if entity's next move is out of bounds:
-        if not engine.game_map.in_bounds(dest_x, dest_y):
+        if not self.engine.game_map.in_bounds(dest_x, dest_y):
             return 
         # Check if entity's next move is NOT on a walkable tile:
-        if not engine.game_map.tiles["walkable"][dest_x, dest_y]:
+        if not self.engine.game_map.tiles["walkable"][dest_x, dest_y]:
             return 
-        # Pass this entity's destination x/y to a function that checks no other entities are occupying the target space.
-        # If an entity is returned (found matching criteria), set the entity at the destination coordinates (block player)
-        if engine.game_map.get_blocking_entity_at_location(dest_x, dest_y):
+        # Check if a 'blocking_entity' is in the destination tile:
+        if self.engine.game_map.get_blocking_entity_at_location(dest_x, dest_y):
             return 
 
-        # If everything checks ok, call the entity's '.move()' method
-        entity.move(self.dx, self.dy)
+        self.entity.move(self.dx, self.dy)
 
 
 
 class BumpAction(ActionWithDirection):
     '''
-    Extends 'ActionWithDirection' class to determine which action occurs next: 'MovementAction' or 'MeleeAction
+    Extends 'ActionWithDirection' class to determine which action occurs next: 'MovementAction' or 'MeleeAction'
     '''
-    def perform(self, engine:Engine, entity:Entity) -> None:
-        # Current position + direction of travel = destination x/y
-        dest_x = entity.x + self.dx 
-        dest_y = entity.y + self.dy
 
-        # Calls a GameMap method to check if the entity is being blocked by another.
-        if engine.game_map.get_blocking_entity_at_location(dest_x, dest_y):
-            return MeleeAction(self.dx, self.dy).perform(engine, entity)
+    def perform(self) -> None:
+        '''
+        Commit a 'MeleeAction' or a 'MovementAction' depending on whether a 'blocking_entity' is at this entity's destination.
+        '''
+        if self.blocking_entity:
+            return MeleeAction(self.entity, self.dx, self.dy).perform()
 
         else:
-            return MovementAction(self.dx, self.dy).perform(engine, entity)
+            return MovementAction(self.entity, self.dx, self.dy).perform()

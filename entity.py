@@ -12,7 +12,7 @@ Method:
 
 from __future__ import annotations
 import copy
-from typing import (Tuple, TypeVar, TYPE_CHECKING)
+from typing import (Optional, Tuple, TypeVar, TYPE_CHECKING)
 
 if TYPE_CHECKING:
     from game_map import GameMap
@@ -35,6 +35,7 @@ class Entity:
     def __init__(
         # Set initial values
         self, 
+        gamemap: Optional[GameMap] = None,
         x: int = 0,                                     # x/y   - entity's position
         y: int = 0,     
         char: str = "?",                                # char  - its symbol/sprite
@@ -49,17 +50,41 @@ class Entity:
         self.name = name
         self.blocks_movement = blocks_movement
 
+        if gamemap:
+            # If a gamemap isn't provided now then it will be set later.
+            self.gamemap = gamemap
+            gamemap.entities.add(self)
+
 
     #_____/ METHOD / .spawn(self, gamemap, x, y)
     def spawn(self: T, gamemap: GameMap, x: int, y:int) -> T:
         ''' 
-        Spawn a copy of this instance at a given location. 
+        Spawns a copy of this entity instance at a given location. 
         '''
         clone = copy.deepcopy(self)
+
         clone.x = x
         clone.y = y
+
+        clone.gamemap = gamemap
         gamemap.entities.add(clone)
+
         return clone
+
+    
+    def place(self, x: int, y: int, gamemap: Optional[GameMap] = None) -> None:
+        ''' Place this entity at a new location (handles moving between GameMaps). '''
+        self.x = x
+        self.y = y
+
+        if gamemap:
+
+            if hasattr(self, "gamemap"):    # Possibly hasn't been initialized
+                self.gamemap.entites.remove(self)
+
+            self.gamemap = gamemap
+            
+            gamemap.entities.add(self)
 
 
     #_____/ METHOD / .move(dx, dy)

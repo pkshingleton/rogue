@@ -102,7 +102,7 @@ dirt = new_tile(
     walkable        =True,
     transparent     =True,
     dark            =(ord(" "), dark_brown, dark_brown),
-    light           =(ord("."), dark_brown, brown),
+    light           =(ord("."), gray, brown),
 )
 
 floor_wood = new_tile(

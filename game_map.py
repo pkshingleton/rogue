@@ -17,6 +17,7 @@ from tcod.console import Console
 import tile_types
 
 if TYPE_CHECKING:
+    from engine import Engine
     from entity import Entity
 
 
@@ -30,25 +31,44 @@ class GameMap:
     '''
 
     # Initialize
-    def __init__(self, width: int, height: int, entities: Iterable[Entity] = ()):
-        # Map dimensions
+    def __init__(
+        self, engine: Engine, width: int, height: int, entities: Iterable[Entity] = ()
+    ):
+        self.engine = engine
         self.width, self.height = width, height
         # Creates a a Set of Entity class instances (passed in as an iterable object)
         self.entities = set(entities)
         # Fill area with wall tiles by default. 
-        self.tiles = np.full((width, height), fill_value=tile_types.wall, order="F")
-        # Different states the tiles can be rendered in
-        self.visible = np.full((width, height), fill_value=False, order="F")
-        self.explored = np.full((width, height), fill_value=False, order="F")
+        self.tiles = np.full(
+            (width, height), 
+            fill_value=tile_types.wall, 
+            order="F"
+        )
+        self.visible = np.full(
+            (width, height), 
+            fill_value=False, 
+            order="F"
+        )
+        self.explored = np.full(
+            (width, height), 
+            fill_value=False, 
+            order="F"
+        )
 
 
     #_____/ METHOD / .get_blocking_enemy_at_location(x, y)
-    def get_blocking_entity_at_location(self, location_x:int, location_y:int) -> Optional[Entity]:
+    def get_blocking_entity_at_location(
+        self, location_x:int, location_y:int
+    ) -> Optional[Entity]:
         # Iterate through all entities to find one occupying the given location AND has "blocks_movement = True"
         for entity in self.entities:
-            if entity.blocks_movement and entity.x == location_x and entity.y == location_y:
+            if (
+                entity.blocks_movement 
+                and entity.x == location_x 
+                and entity.y == location_y):
                 # If an entity meets the criteria, return it
                 return entity
+        # If not, whatever invokes this function will receive an empty object.
         return None
 
 
@@ -76,20 +96,17 @@ class GameMap:
             - 'choicelist': Tiles in either of the two color states (sorted depending on FOV calculations).
             - 'default': Any tiles not in the above lists are effectively unexplored. They will render as 'SHROUD' 
         '''
-        console.tiles_rgb[0:self.width, 0:self.height] = np.select(
+        console.tiles_rgb[0: self.width, 0: self.height] = np.select(
             # Lists to determine tile appearance
             condlist    = [self.visible, self.explored],                
             choicelist  = [self.tiles["light"], self.tiles["dark"]],    
             default     = tile_types.SHROUD                             
         )
-        # Iterate through the Set of entities and add each one to the console if it exists in a 'visible' area of the map.
+        # Iterate through entities and add one to the console if it exists in a 'visible' area of the map.
         for entity in self.entities:
             if self.visible[entity.x, entity.y]:
                 console.print(
-                    x       = entity.x, 
-                    y       = entity.y, 
-                    string  = entity.char, 
-                    fg      = entity.color
+                    x = entity.x, y = entity.y, string = entity.char,  fg = entity.color
                 )
     
 

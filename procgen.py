@@ -26,7 +26,7 @@ import tile_types
 
 # Conditional module
 if TYPE_CHECKING:
-    from entity import Entity
+    from engine import Engine
 
 
 
@@ -167,13 +167,15 @@ def generate_random_dungeon(
     map_width:      int,         
     map_height:     int,
     max_enemies:    int,
-    player:         Entity,
+    engine:         Engine,
 ) -> GameMap:
     ''' 
-    Generates a procedurally-built dungeon map. 
+    Generates a new procedurally-built dungeon map. 
     '''
+    # Get the player
+    player = engine.player
     # Get the map width/height passed into the function and set a map instance with those dimensions.
-    dungeon = GameMap(map_width, map_height, entities=[player])
+    dungeon = GameMap(engine, map_width, map_height, entities=[player])
 
     # Set a typed List to hold all the generated room instances (reference/key is 'rooms')
     rooms: List[RectangularRoom] = []
@@ -200,7 +202,7 @@ def generate_random_dungeon(
 
         # Set player's starting position in the first room (from Tuple returned by room's '.center()' method)
         if len(rooms) == 0:
-            player.x, player.y = new_room.center
+            player.place(*new_room.center, dungeon)
 
         else:
             # Connect the centers of the previous room and the current one (tunnel)

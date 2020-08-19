@@ -14,10 +14,15 @@ The event handler takes a detected event and assigns a corresponding action "typ
 
 #_______________________________________________________________________// MODULES
 
-from typing import Optional
+from __future__ import annotations
+from typing import (Optional, TYPE_CHECKING)
+
 import tcod.event
 
 from actions import (Action, EscapeAction, BumpAction)
+
+if TYPE_CHECKING:
+    from engine import Engine
 
 
 
@@ -26,10 +31,28 @@ from actions import (Action, EscapeAction, BumpAction)
 # (Extends the tcod 'EventDispatch' class - Listens for pre-set events and return an 'action')
 class EventHandler(tcod.event.EventDispatch[Action]):
     ''' 
-    Takes 'tcod.event.EventDispatch'event and returns an 'action' depending on the event.
-    
-    KeyDown events call 'EscapeAction' (for ESC keypress) or 'BumpAction' (which determines if the player moves or attacks)
+    Takes 'tcod.event.EventDispatch'event and returns an 'action' depending on the event. 
+    KeyDown events call 'EscapeAction' (for ESC keypress) or 'BumpAction' (which determines if the player moves or attacks).
     '''
+
+    def __init__(self, engine: Engine):
+        self.engine = engine
+
+
+    #_____/ METHOD / .handle_events()
+    def handle_events(self) -> None:
+        for event in tcod.event.wait():
+            action = self.dispatch(event)
+
+            if action is None:
+                continue
+                
+            action.perform()
+
+            # Enemies take turns and player FOV is updated before the next action.
+            self.engine.handle_enemy_turns()
+            self.engine.update_fov()
+
     
     #_____/ METHOD / .ev_quit(tcod.event.Quit)
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
@@ -42,25 +65,27 @@ class EventHandler(tcod.event.EventDispatch[Action]):
         # Set the default action to 'none' (returned when no key/invalid key is pressed)
         action: Optional[Action] = None
 
-        # Set instance of whatever key press is detected by the system
+        # Capture the key pressed
         key = event.sym 
+
+        player = self.engine.player
 
         # A direction key (up, down, left, right) sets the returned action as a 'movement'
         if key == tcod.event.K_UP:
-            action = BumpAction(dx=0, dy=-1)
+            action = BumpAction(player, dx=0, dy=-1)
 
         elif key == tcod.event.K_DOWN:
-            action = BumpAction(dx=0, dy=1)
+            action = BumpAction(player, dx=0, dy=1)
 
         elif key == tcod.event.K_LEFT:
-            action = BumpAction(dx=-1, dy=0)
+            action = BumpAction(player, dx=-1, dy=0)
 
         elif key == tcod.event.K_RIGHT:
-            action = BumpAction(dx=1, dy=0)
+            action = BumpAction(player, dx=1, dy=0)
 
         # The 'ESC' key returns an 'escape' action
         elif key == tcod.event.K_ESCAPE:
-            action = EscapeAction()
+            action = EscapeAction(player)
 
         # Returns the resulting action type (defualt = 'none')
         return action

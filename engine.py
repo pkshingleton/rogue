@@ -17,15 +17,19 @@ The engine "render" function in sequence:
 
 #_______________________________________________________________________// MODULES
 
-from typing import (Set, Iterable, Any)
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from tcod.context import Context
 from tcod.console import Console
 from tcod.map import compute_fov
 
-from entity import Entity
-from game_map import GameMap
 from input_handlers import EventHandler
+
+if TYPE_CHECKING:
+    from entity import Entity
+    from game_map import GameMap
 
 
 
@@ -33,14 +37,14 @@ from input_handlers import EventHandler
 
 class Engine:
 
+    game_map: GameMap
+
     # Initialize
     # (Expects a set of entities, an event handler, a map, and a separate reference to the player entity)
-    def __init__(self, event_handler: EventHandler, game_map: GameMap, player: Entity):
+    def __init__(self, player: Entity):
         # The engine listens for events and updates the game map and player state (location and FOV) accordingly.
-        self.event_handler  = event_handler
-        self.game_map       = game_map
-        self.player         = player
-        self.update_fov() 
+        self.event_handler: EventHandler = EventHandler(self)
+        self.player = player
 
 
     def handle_enemy_turns(self)-> None:
@@ -48,31 +52,14 @@ class Engine:
             print(f'The {entity.name} when it will get to take a turn...')
 
 
-    # (Continuously loops through the events passed in by 'EventHandler' class from the 'input_handlers.py' module)
-    def handle_events(self, events: Iterable[Any]) -> None:
-        ''' 
-        Takes an event from 'tcod.event', EventHandler returns an 'action',
-        Then the '.perform()' method is called to execute it.
-        '''
-        for event in events:
-            action = self.event_handler.dispatch(event)
-
-            # If no action is returned (or invalid action), do nothing
-            if action is None:
-                continue
-        
-            action.perform(self, self.player)
-            self.handle_enemy_turns()
-            self.update_fov()               # Updates player's FOV before their next action
-
-
     def update_fov(self) -> None:
-        ''' Recompute the visible area based on the player's point of view. '''
-        # Sets visibility of a tile based on tcod library's 'map.compute_fov()' method
-        #   "transparency"- uses a 2D numpy array where any non-zero values are considered transparent.  
-        #   "player.x, player.y" - the player's x/y point (character's POV)
-        #   "radius" - how far the FOV extends (in tiled spaces)
-        #   (https://python-tcod.readthedocs.io/en/latest/tcod/map.html#tcod.map.compute_fov)
+        '''  
+        * Sets visibility of a tile based on tcod library's 'map.compute_fov()' method
+        - "transparency"- uses a 2D numpy array where any non-zero values are considered transparent.  
+        - "player.x, player.y" - the player's x/y point (character's POV)
+        - "radius" - how far the FOV extends (in tiled spaces) 
+        > (https://python-tcod.readthedocs.io/en/latest/tcod/map.html#tcod.map.compute_fov)
+        '''
         self.game_map.visible[:] = compute_fov(
             self.game_map.tiles["transparent"],
             (self.player.x, self.player.y),
@@ -88,7 +75,6 @@ class Engine:
         Then 'tcod.context' displays the console to the screen. 
         '''
         self.game_map.render(console)
-
         context.present(console)
         console.clear()
     

@@ -12,7 +12,6 @@ import copy
 
 from engine import Engine
 import entity_factories
-from input_handlers import EventHandler
 from procgen import (generate_static_dungeon, generate_random_dungeon)
 
 
@@ -36,39 +35,26 @@ def main() -> None:
 
 
     # Use the root-level included font sprite sheet for characters
-    tileset = tcod.tileset.load_tilesheet(
-        "dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD
-    )
+    tileset = tcod.tileset.load_tilesheet("dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
 
-
-    # Sets instance of the 'EventHandler' class for taking user input
-    event_handler = EventHandler()
 
     # Instance of the 'player' entity
     player = copy.deepcopy(entity_factories.player)
-
-
-    # Static maps
-    OUTDOOR_GARDEN = generate_static_dungeon(map_width, map_height, 'dungeon')
-    INDOOR_HOUSE = generate_static_dungeon(map_width, map_height, 'house')
-
+    # Instantiate the Engine class
+    engine = Engine(player = player)
     # Auto-generated map
-    DUNGEON_A = generate_random_dungeon(
+    engine.game_map = generate_random_dungeon(
         max_rooms       = max_rooms,         
         room_min_size   = room_min_size,     
         room_max_size   = room_max_size,    
         map_width       = map_width,         
         map_height      = map_height,
         max_enemies     = max_enemies,
-        player          = player,
+        engine          = engine
     )
 
-    # Instantiate the Engine class - parses events, renders the map (tiles + entities), and updates the player entity
-    engine = Engine(
-        event_handler   = event_handler, 
-        game_map        = DUNGEON_A,     # <-- Replace with whatever map needs to be loaded
-        player          = player
-    )
+    # Recalculates tile visibility around the player ('explored', 'visible', or 'SHROUD')
+    engine.update_fov()
 
 
     # Terminal/canvas: main state that gets continually updated and re-drawn. 
@@ -92,9 +78,6 @@ def main() -> None:
             engine.render(console=root_console, context=context)
 
             # Await user input/event and store it
-            events = tcod.event.wait()
-            
-            # Pass stored event to the engine's event handler
-            engine.handle_events(events)
+            engine.event_handler.handle_events()
 
  
