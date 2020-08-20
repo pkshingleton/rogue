@@ -12,6 +12,7 @@ Tiles are parts of the map that can be interacted with. They represent doors/pit
 from typing import Tuple
 import numpy as np
 
+from colors import *
 
 
 #_______________________________________________________________________// DATA (TYPES)
@@ -72,21 +73,6 @@ def new_tile(
 #'SHROUD' represents unexplored, unseen tiles. 
 SHROUD = np.array((ord(" "), (255, 255, 255), (0, 0, 0)), dtype=graphic_symbol)
 
-# Colors for tiles (make this part of an external 'tile library')
-white       = (255, 255, 255)   
-dark_blue   = (50, 50, 150)
-light_green = (68, 172, 31)
-green       = (68, 97, 57)
-dark_green  = (56, 69, 52)
-light_tan   = (130, 110, 50)
-brown       = (77, 72, 71)
-dark_brown  = (59, 56, 56)
-red         = (158, 75, 58)
-light_gray  = (114, 114, 117)
-gray        = (100, 100, 100)
-dark_gray   = (62, 62, 62)
-black       = (0 ,0, 0)         
-
 
 
 #_______________________________________________________________________// DATA (TUPLES) - TILES
@@ -102,7 +88,7 @@ dirt = new_tile(
     walkable        =True,
     transparent     =True,
     dark            =(ord(" "), dark_brown, dark_brown),
-    light           =(ord("."), gray, brown),
+    light           =(ord("."), light_brown, brown),
 )
 
 floor_wood = new_tile(

@@ -6,6 +6,7 @@ Stores all the entities that can be placed on a map. Includes player, NPCs (shop
 #_______________________________________________________________________// MODULES
 
 from entity import Entity
+from colors import *
 
 
 
@@ -14,7 +15,7 @@ from entity import Entity
 # Player
 player = Entity(
     char                = "@",
-    color               = (255, 255, 255),
+    color               = yellow,
     name                = "Player",
     blocks_movement     = True  
 )
@@ -22,14 +23,14 @@ player = Entity(
 #Enemies
 orc = Entity(
     char                = "o",
-    color               = (63, 127, 63),
+    color               = red,
     name                = "Orc",
     blocks_movement     = True  
 )
 
 troll = Entity(
     char                = "T",
-    color               = (0, 127, 0),
+    color               = red,
     name                = "Troll",
     blocks_movement     = True  
 )

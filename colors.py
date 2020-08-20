@@ -1,0 +1,18 @@
+
+
+# Colors for tiles (make this part of an external 'tile library')
+white       = (255, 255, 255)   
+dark_blue   = (50, 50, 150)
+light_green = (68, 172, 31)
+green       = (68, 97, 57)
+dark_green  = (56, 69, 52)
+light_tan   = (130, 110, 50)
+light_brown = (87, 79, 76)
+brown       = (77, 72, 71)
+dark_brown  = (59, 56, 56)
+red         = (158, 75, 58)
+light_gray  = (114, 114, 117)
+gray        = (95, 95, 95)
+dark_gray   = (62, 62, 62)
+black       = (0 ,0, 0)
+yellow      = (255, 222, 5)   

@@ -49,7 +49,7 @@ class Engine:
 
     def handle_enemy_turns(self)-> None:
         for entity in self.game_map.entities - {self.player}:
-            print(f'The {entity.name} when it will get to take a turn...')
+            print(f'The {entity.name} is lurking nearby...')
 
 
     def update_fov(self) -> None:

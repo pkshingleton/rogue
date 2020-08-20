@@ -33,7 +33,7 @@ Following **[this tutorial](http://rogueliketutorials.com/tutorials/tcod/v2/)**,
 
 Requirements: 
 
-- tcod>=11.13
+- tcod>=11.15
 
 - numpy>=1.18
 

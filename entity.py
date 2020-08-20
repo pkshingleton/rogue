@@ -78,12 +78,11 @@ class Entity:
         self.y = y
 
         if gamemap:
-
-            if hasattr(self, "gamemap"):    # Possibly hasn't been initialized
+            # If this entity has a GameMap associated with it:
+            if hasattr(self, "gamemap"):
                 self.gamemap.entites.remove(self)
 
             self.gamemap = gamemap
-            
             gamemap.entities.add(self)
 
 
