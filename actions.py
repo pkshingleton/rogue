@@ -60,6 +60,12 @@ class EscapeAction(Action):
 
 
 
+class WaitAction(Action):
+    def perform(self) -> None:
+        pass
+
+
+
 class ActionWithDirection(Action):
     ''' 
     Inherits/extends the 'Action' class by setting values for assessing direction/movement. 

@@ -1,11 +1,15 @@
 '''
-Stores all the entities that can be placed on a map. Includes player, NPCs (shopkeepers, etc.) and enemies.
+Stores all the entities that can be placed on a map as instances of the 'Actor' class. 
+Includes player, NPCs (shopkeepers, etc.) enemies, and more!
 '''
 
 
 #_______________________________________________________________________// MODULES
 
-from entity import Entity
+from entity import Actor
+from components.ai import HostileEnemy
+from components.fighter import Fighter
+
 from colors import *
 
 
@@ -13,24 +17,29 @@ from colors import *
 #_______________________________________________________________________// DATA (TUPLES) - ENTITIES
 
 # Player
-player = Entity(
-    char                = "@",
-    color               = yellow,
-    name                = "Player",
-    blocks_movement     = True  
+player = Actor(
+    char       = "@",
+    color      = yellow,
+    name       = "Player",
+    ai_cls     = HostileEnemy,
+    figher     = Fighter(hp=30, defense=2, power=5)
 )
 
 #Enemies
-orc = Entity(
-    char                = "o",
-    color               = red,
-    name                = "Orc",
-    blocks_movement     = True  
+# TODO: Set enemy's 'Fighter' stats to derive from player's stats (so difficulty will scale up)
+
+orc = Actor(
+    char       = "@",
+    color      = red,
+    name       = "Orc",
+    ai_cls     = HostileEnemy,
+    figher     = Fighter(hp=10, defense=0, power=3)
 )
 
-troll = Entity(
-    char                = "T",
-    color               = red,
-    name                = "Troll",
-    blocks_movement     = True  
+troll = Actor(
+    char       = "@",
+    color      = red,
+    name       = "Troll",
+    ai_cls     = HostileEnemy,
+    figher     = Fighter(hp=16, defense=1, power=4)
 )

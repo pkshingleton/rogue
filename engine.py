@@ -48,8 +48,10 @@ class Engine:
 
 
     def handle_enemy_turns(self)-> None:
-        for entity in self.game_map.entities - {self.player}:
-            print(f'The {entity.name} is lurking nearby...')
+        # Go through all actors on a given game map (minus the player actor)
+        for entity in set(self.game_map.actors) - {self.player}:
+            if entity.ai:
+                entity.ai.perform()
 
 
     def update_fov(self) -> None:
