@@ -17,7 +17,7 @@ from typing import (Optional, Tuple, TYPE_CHECKING)
 # Conditional modules
 if TYPE_CHECKING:
     from engine import Engine
-    from entity import Entity
+    from entity import (Actor, Entity)
 
 
 
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 # Base class 
 class Action:
 
-    def __init__(self, entity: Entity) -> None:
+    def __init__(self, entity: Actor) -> None:
         super().__init__()
         self.entity = entity
 
@@ -73,7 +73,7 @@ class ActionWithDirection(Action):
     This yields sub-classes that determine WHAT the direciton/movement invokes.
     '''
 
-    def __init__(self, entity: Entity, dx: int, dy: int):
+    def __init__(self, entity: Actor, dx: int, dy: int):
         super().__init__(entity)
         # Direction of travel
         self.dx = dx
@@ -82,7 +82,9 @@ class ActionWithDirection(Action):
 
     @property
     def dest_xy(self) -> Tuple[int, int]:
-        ''' Returns this actions destination as a property. '''
+        ''' 
+        Returns this actions destination as a property. 
+        '''
         return self.entity.x + self.dx, self.entity.y + self.dy
 
 
@@ -92,6 +94,14 @@ class ActionWithDirection(Action):
         Returns an entity blocking the player at this actions destination, and sets that entity as a property.
         '''
         return self.engine.game_map.get_blocking_entity_at_location(*self.dest_xy)
+
+
+    @property
+    def target_actor(self) -> Optional[Actor]:
+        ''' 
+        Returns whatever actor is at the destination of this action
+        '''
+        return self.engine.game_map.get_actor_at_location(*self.dest_xy)
 
 
     def perform(self) -> None:
@@ -107,13 +117,24 @@ class MeleeAction(ActionWithDirection):
     '''
 
     def perform(self) -> None:
-        ''' Uses the inherited 'blocking_entity' property (defined in 'ActionWithDirection' class) to commit an attack. '''
-        target = self.blocking_entity
+        ''' 
+        Uses the inherited 'target_actor' property (defined in 'ActionWithDirection' class) to receive the attack. 
+        '''
+        target = self.target_actor
         # If return was 'None' (no entity found matching the function's criteria), no attack happens.
         if not target:
             return
-        # Text message to appear in console
-        print(f"You kick the {target.name}! *POW*")
+
+        damage = self.entity.fighter.power - target.fighter.defense
+
+        attack_desc = f"{self.entity.name.capitalize()} attacks {target.name}"
+
+        if damage > 0:
+            print (f"{attack_desc} for {damage} HP!")
+            target.fighter.hp -= damage
+
+        else:
+            print (f"{attack_desc}... but does no damage.")
 
 
 
@@ -126,7 +147,9 @@ class MovementAction(ActionWithDirection):
     '''
 
     def perform(self) -> None:
-        ''' Commit this entity's movement to a destination by calling 'self.entity.move(dx, dy)' '''
+        ''' 
+        Commit this entity's movement to a destination by calling its own '.move()' method.
+        '''
         dest_x, dest_y = self.dest_xy
         # Check if entity's next move is out of bounds:
         if not self.engine.game_map.in_bounds(dest_x, dest_y):
@@ -149,9 +172,9 @@ class BumpAction(ActionWithDirection):
 
     def perform(self) -> None:
         '''
-        Commit a 'MeleeAction' or a 'MovementAction' depending on whether a 'blocking_entity' is at this entity's destination.
+        Commit a 'MeleeAction' or a 'MovementAction' depending on whether a 'target_actor' is at this entity's destination.
         '''
-        if self.blocking_entity:
+        if self.target_actor:
             return MeleeAction(self.entity, self.dx, self.dy).perform()
 
         else:

@@ -22,24 +22,24 @@ player = Actor(
     color      = yellow,
     name       = "Player",
     ai_cls     = HostileEnemy,
-    figher     = Fighter(hp=30, defense=2, power=5)
+    fighter     = Fighter(hp=30, defense=2, power=5)
 )
 
 #Enemies
 # TODO: Set enemy's 'Fighter' stats to derive from player's stats (so difficulty will scale up)
 
 orc = Actor(
-    char       = "@",
+    char       = "O",
     color      = red,
     name       = "Orc",
     ai_cls     = HostileEnemy,
-    figher     = Fighter(hp=10, defense=0, power=3)
+    fighter     = Fighter(hp=10, defense=0, power=3)
 )
 
 troll = Actor(
-    char       = "@",
+    char       = "T",
     color      = red,
     name       = "Troll",
     ai_cls     = HostileEnemy,
-    figher     = Fighter(hp=16, defense=1, power=4)
+    fighter     = Fighter(hp=16, defense=1, power=4)
 )

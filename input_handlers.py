@@ -19,19 +19,59 @@ from typing import (Optional, TYPE_CHECKING)
 
 import tcod.event
 
-from actions import (Action, EscapeAction, BumpAction)
+from actions import (Action, EscapeAction, BumpAction, WaitAction)
 
 if TYPE_CHECKING:
     from engine import Engine
 
 
 
+#_______________________________________________________________________// ASSIGNMENTS / DICT objects
+# Dictionaries (objects) for storing the possible keypresses. 
+
+MOVE_KEYS = {
+    # Arrow keys.
+    tcod.event.K_UP: (0, -1),
+    tcod.event.K_DOWN: (0, 1),
+    tcod.event.K_LEFT: (-1, 0),
+    tcod.event.K_RIGHT: (1, 0),
+    tcod.event.K_HOME: (-1, -1),
+    tcod.event.K_END: (-1, 1),
+    tcod.event.K_PAGEUP: (1, -1),
+    tcod.event.K_PAGEDOWN: (1, 1),
+    # Numpad keys.
+    tcod.event.K_KP_1: (-1, 1),
+    tcod.event.K_KP_2: (0, 1),
+    tcod.event.K_KP_3: (1, 1),
+    tcod.event.K_KP_4: (-1, 0),
+    tcod.event.K_KP_6: (1, 0),
+    tcod.event.K_KP_7: (-1, -1),
+    tcod.event.K_KP_8: (0, -1),
+    tcod.event.K_KP_9: (1, -1),
+    # Vi keys.
+    tcod.event.K_h: (-1, 0),
+    tcod.event.K_j: (0, 1),
+    tcod.event.K_k: (0, -1),
+    tcod.event.K_l: (1, 0),
+    tcod.event.K_y: (-1, -1),
+    tcod.event.K_u: (1, -1),
+    tcod.event.K_b: (-1, 1),
+    tcod.event.K_n: (1, 1),
+}
+
+WAIT_KEYS = {
+    tcod.event.K_PERIOD,
+    tcod.event.K_KP_5,
+    tcod.event.K_CLEAR,
+}
+
+
+
 #_______________________________________________________________________// CLASSES
 
-# (Extends the tcod 'EventDispatch' class - Listens for pre-set events and return an 'action')
 class EventHandler(tcod.event.EventDispatch[Action]):
     ''' 
-    Takes 'tcod.event.EventDispatch'event and returns an 'action' depending on the event. 
+    Inherits/extends 'tcod.event.EventDispatch' class and returns an 'action' depending on the event. 
     KeyDown events call 'EscapeAction' (for ESC keypress) or 'BumpAction' (which determines if the player moves or attacks).
     '''
 
@@ -39,7 +79,6 @@ class EventHandler(tcod.event.EventDispatch[Action]):
         self.engine = engine
 
 
-    #_____/ METHOD / .handle_events()
     def handle_events(self) -> None:
         for event in tcod.event.wait():
             action = self.dispatch(event)
@@ -54,34 +93,26 @@ class EventHandler(tcod.event.EventDispatch[Action]):
             self.engine.update_fov()
 
     
-    #_____/ METHOD / .ev_quit(tcod.event.Quit)
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
         raise SystemExit()
 
 
-    #_____/ METHOD / .ev_keydown(tcpd.event.KeyDown)
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
-
         # Set the default action to 'none' (returned when no key/invalid key is pressed)
         action: Optional[Action] = None
 
-        # Capture the key pressed
+        # Capture the key pressed and grab the 'player' instance from the engine object
         key = event.sym 
-
         player = self.engine.player
 
-        # A direction key (up, down, left, right) sets the returned action as a 'movement'
-        if key == tcod.event.K_UP:
-            action = BumpAction(player, dx=0, dy=-1)
+        # Check if keypress matches anything in the pre-defined Dict objects
+        if key in MOVE_KEYS:
+           dx, dy = MOVE_KEYS[key]
+           action = BumpAction(player, dx, dy)
 
-        elif key == tcod.event.K_DOWN:
-            action = BumpAction(player, dx=0, dy=1)
+        elif key in WAIT_KEYS:
+            action = WaitAction(player)
 
-        elif key == tcod.event.K_LEFT:
-            action = BumpAction(player, dx=-1, dy=0)
-
-        elif key == tcod.event.K_RIGHT:
-            action = BumpAction(player, dx=1, dy=0)
 
         # The 'ESC' key returns an 'escape' action
         elif key == tcod.event.K_ESCAPE:

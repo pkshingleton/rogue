@@ -9,11 +9,12 @@ The default-filled wall tiles are "dug out" by the 'procgen.py' module's dungeon
 #_______________________________________________________________________// MODULES
 
 from __future__ import annotations
-from typing import (Iterable, Optional, TYPE_CHECKING)
+from typing import (Iterable, Iterator, Optional, TYPE_CHECKING)
 
 import numpy as np
 from tcod.console import Console
 
+from entity import Actor
 import tile_types
 
 if TYPE_CHECKING:
@@ -30,25 +31,28 @@ class GameMap:
     Includes properties for 'visible' and 'explored' areas which are referenced in the .render() method to determine the tile states.  
     '''
 
-    # Initialize
-    def __init__(
-        self, engine: Engine, width: int, height: int, entities: Iterable[Entity] = ()
-    ):
+    def __init__(self, engine: Engine, width: int, height: int, entities: Iterable[Entity] = ()):
+        '''
+        Takes an Engine instance, values for width/height, and an entities instance. 
+        Defines arrays for this map's tile types - 'visible' and/or 'explored'.
+        '''
         self.engine = engine
         self.width, self.height = width, height
         # Creates a a Set of Entity class instances (passed in as an iterable object)
         self.entities = set(entities)
-        # Fill area with wall tiles by default. 
+        # Fill area of given dimensions with default wall tiles. 
         self.tiles = np.full(
             (width, height), 
             fill_value=tile_types.wall, 
             order="F"
         )
+        # Area of map with a 'visible' tiles ('Light' color mode and in player FOV)
         self.visible = np.full(
             (width, height), 
             fill_value=False, 
             order="F"
         )
+        # Area of map with 'explored' tiles ('Dark' color mode and not in player FOV, but was visible at some point)
         self.explored = np.full(
             (width, height), 
             fill_value=False, 
@@ -56,33 +60,52 @@ class GameMap:
         )
 
 
-    #_____/ METHOD / .get_blocking_enemy_at_location(x, y)
-    def get_blocking_entity_at_location(
-        self, location_x:int, location_y:int
-    ) -> Optional[Entity]:
-        # Iterate through all entities to find one occupying the given location AND has "blocks_movement = True"
+    @property
+    def actors(self) -> Iterator[Actor]:
+        '''
+        Iterates over this maps living/alive actors and returns ('yields') any that are still alive. 
+        '''
+        yield from(
+            entity 
+            for entity in self.entities
+            if isinstance(entity, Actor) and entity.is_alive
+        )
+
+
+    def get_blocking_entity_at_location(self, location_x:int, location_y:int) -> Optional[Entity]:
+        '''
+        Iterates through map's entities set, finds one occupying the given location (and has "blocks_movement = True"), and returns it.
+        '''
         for entity in self.entities:
             if (
                 entity.blocks_movement 
                 and entity.x == location_x 
-                and entity.y == location_y):
+                and entity.y == location_y
+            ):
                 # If an entity meets the criteria, return it
                 return entity
-        # If not, whatever invokes this function will receive an empty object.
+        # If not, return an empty object.
         return None
 
 
-    #_____/ METHOD / .in_bounds(x, y)
-    # Takes an x/y position and checks if it's within the boundaries of the map (true/false)
+    def get_actor_at_location(self, x: int, y: int) -> Optional[Actor]:
+        '''
+        Return an Actor instance if the given location matches the actor's set coordinates (ie, actor is at given location)
+        '''
+        for actor in self.actors:
+            if actor.x == x and actor.y == y:
+                return actor
+        # Otherwise return an empty object
+        return None
+
+
     def in_bounds(self, x: int, y: int) -> bool:
         ''' 
-        Check if something is inside the map's area 
+        Check if something is inside the map's dimensions/area using given x/y and returns True or False.
         '''
         return 0 <= x < self.width and 0 <= y < self.height
 
 
-    #_____/ METHOD / .render(console)
-    # Sends tiles to the console to be drawn (rendered)
     def render(self, console: Console) -> None:
         ''' 
         Sets tiles and entities to the map. 

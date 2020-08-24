@@ -97,6 +97,9 @@ class Entity:
 
 
 class Actor(Entity):
+    '''
+    Inherits all the properties/attributes/methods of the 'Entity' class.
+    '''
     
     def __init__(
         self,
@@ -129,5 +132,9 @@ class Actor(Entity):
 
     @property
     def is_alive(self) -> bool:
-        ''' Returns 'True' as long as this actor can perform actions (ie, not dead) '''
+        ''' 
+        Returns 'True' as long as this actor has an 'ai'. 
+        - If the entity's '.die()' method gets called, its 'ai' is replaced with 'None', effectively removing its capacity to perform actions.
+        - Calling 'die(). on this entity will also set this property to return 'False'.
+        '''
         return bool(self.ai)
