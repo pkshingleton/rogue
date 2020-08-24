@@ -10,6 +10,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from components.base_component import BaseComponent
+from input_handlers import GameOverEventHandler
+from render_order import RenderOrder
 
 if TYPE_CHECKING:
     from entity import Actor
@@ -28,10 +30,10 @@ class Fighter(BaseComponent):
     entity: Actor
 
     def __init__(self, hp: int, defense: int, power: int):
-        self.max_hp = hp            # Total available health
-        self._hp = hp               # Entity's current health
-        self.defense = defense      # Value used for reducing damage
-        self.power = power          # Entity's attack power / damage dealt
+        self.max_hp     = hp            # Total available health
+        self._hp        = hp            # Entity's current health
+        self.defense    = defense       # Value used for reducing damage
+        self.power      = power         # Entity's attack power / damage dealt
 
     
     @property
@@ -57,14 +59,16 @@ class Fighter(BaseComponent):
         '''
         if self.engine.player is self.entity:
             death_message = "You died!"
+            self.engine.event_handler = GameOverEventHandler(self.engine)
         else:
             death_message = f"{self.entity.name} is dead!"
 
         # Set entity's new attributes:
-        self.entity.char = "%"
-        self.entity.color = (191, 0, 0)
+        self.entity.char            = "%"
+        self.entity.color           = (191, 0, 0)
         self.entity.blocks_movement = False
-        self.entity.ai = None
-        self.entity.name = f"The twisted corpse of {self.entity.name}."
+        self.entity.ai              = None
+        self.entity.name            = f"The twisted corpse of {self.entity.name}."
+        self.entity.render_order    = RenderOrder.CORPSE
 
         print(death_message)

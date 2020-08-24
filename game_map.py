@@ -109,11 +109,9 @@ class GameMap:
     def render(self, console: Console) -> None:
         ''' 
         Sets tiles and entities to the map. 
-        
-        - If the tile is in the "visible" array, draw it with the 'light' color.
-        - If it isn't, but it's been 'explored', draw it with the 'dark' color.
-        - If tile is unexplored, default to "SHROUD".
-
+            - If the tile is in the "visible" array, draw it with the 'light' color.
+            - If it isn't, but it's been 'explored', draw it with the 'dark' color.
+            - If tile is unexplored, default to "SHROUD".
         Tiles are sorted into Lists:
             - 'condlist': Tiles can be both visible AND explored, so they make up a parent list of conditional states.
             - 'choicelist': Tiles in either of the two color states (sorted depending on FOV calculations).
@@ -125,8 +123,15 @@ class GameMap:
             choicelist  = [self.tiles["light"], self.tiles["dark"]],    
             default     = tile_types.SHROUD                             
         )
+
+        # Determine in what order to render entities:
+        entities_sorted_for_rendering = sorted(
+            self.entities,                              # The Set of entities to sort
+            key = lambda x: x.render_order.value        # A custom key for sorting by (using 'render_order' module)
+        )
+
         # Iterate through entities and add one to the console if it exists in a 'visible' area of the map.
-        for entity in self.entities:
+        for entities in entities_sorted_for_rendering:
             if self.visible[entity.x, entity.y]:
                 console.print(
                     x = entity.x, y = entity.y, string = entity.char,  fg = entity.color

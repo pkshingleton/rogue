@@ -25,11 +25,12 @@ from tcod.context import Context
 from tcod.console import Console
 from tcod.map import compute_fov
 
-from input_handlers import EventHandler
+from input_handlers import MainGameEventHandler
 
 if TYPE_CHECKING:
-    from entity import Entity
+    from entity import Actor
     from game_map import GameMap
+    from input_handlers import EventHandler
 
 
 
@@ -41,9 +42,9 @@ class Engine:
 
     # Initialize
     # (Expects a set of entities, an event handler, a map, and a separate reference to the player entity)
-    def __init__(self, player: Entity):
+    def __init__(self, player: Actor):
         # The engine listens for events and updates the game map and player state (location and FOV) accordingly.
-        self.event_handler: EventHandler = EventHandler(self)
+        self.event_handler: EventHandler = MainGameEventHandler(self)
         self.player = player
 
 
@@ -77,6 +78,13 @@ class Engine:
         Then 'tcod.context' displays the console to the screen. 
         '''
         self.game_map.render(console)
+
+        console.print(
+            x       = 1,
+            y       = 47,
+            string  = f"HP: {self.player.fighter.hp} / {self.player.fighter.max_hp}"
+        )
+
         context.present(console)
         console.clear()
     

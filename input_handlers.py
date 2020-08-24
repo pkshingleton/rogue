@@ -26,9 +26,10 @@ if TYPE_CHECKING:
 
 
 
-#_______________________________________________________________________// ASSIGNMENTS / DICT objects
+#_______________________________________________________________________// ASSIGNMENTS / DICT (OBJECTS)
 # Dictionaries (objects) for storing the possible keypresses. 
 
+# Cardinal direction movement
 MOVE_KEYS = {
     # Arrow keys.
     tcod.event.K_UP: (0, -1),
@@ -59,6 +60,7 @@ MOVE_KEYS = {
     tcod.event.K_n: (1, 1),
 }
 
+# Wait/skip turn
 WAIT_KEYS = {
     tcod.event.K_PERIOD,
     tcod.event.K_KP_5,
@@ -71,14 +73,31 @@ WAIT_KEYS = {
 
 class EventHandler(tcod.event.EventDispatch[Action]):
     ''' 
-    Inherits/extends 'tcod.event.EventDispatch' class and returns an 'action' depending on the event. 
-    KeyDown events call 'EscapeAction' (for ESC keypress) or 'BumpAction' (which determines if the player moves or attacks).
+    Inherits/extends 'tcod.event.EventDispatch' class and returns a generic 'action' depending on the event. 
+    - The returned Action gets inherited and extended by other classes to define different action types.
     '''
 
     def __init__(self, engine: Engine):
         self.engine = engine
 
 
+    def handle_events(self) -> None:
+        raise NotImplementedError()
+
+
+    def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
+        raise SystemExit()
+
+
+
+class MainGameEventHandler(EventHandler):
+    '''
+    Inherits and extends 'EventHandler' base class to enable primary gameplay controls.
+    - Use this class for the main game.
+    - KeyDown events call 'EscapeAction' or 'BumpAction' (which determines to perform either 'MoveAction' or 'MeleeAction').
+    - 'ev_quit()' is already attached since its defined in the 'EventHandler' base class.
+    '''
+    
     def handle_events(self) -> None:
         for event in tcod.event.wait():
             action = self.dispatch(event)
@@ -92,10 +111,6 @@ class EventHandler(tcod.event.EventDispatch[Action]):
             self.engine.handle_enemy_turns()
             self.engine.update_fov()
 
-    
-    def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
-        raise SystemExit()
-
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
         # Set the default action to 'none' (returned when no key/invalid key is pressed)
@@ -105,7 +120,7 @@ class EventHandler(tcod.event.EventDispatch[Action]):
         key = event.sym 
         player = self.engine.player
 
-        # Check if keypress matches anything in the pre-defined Dict objects
+        # Check if keypress matches a valid keypress in the pre-defined Dict objects
         if key in MOVE_KEYS:
            dx, dy = MOVE_KEYS[key]
            action = BumpAction(player, dx, dy)
@@ -113,10 +128,43 @@ class EventHandler(tcod.event.EventDispatch[Action]):
         elif key in WAIT_KEYS:
             action = WaitAction(player)
 
-
         # The 'ESC' key returns an 'escape' action
         elif key == tcod.event.K_ESCAPE:
             action = EscapeAction(player)
 
         # Returns the resulting action type (defualt = 'none')
         return action
+
+
+
+class GameOverEventHandler(EventHandler):
+    '''
+    Inherits and extends 'EventHandler' class for limited controls available to the player.
+    - Use this class after the player dies where the only valid key should be 'ESC'.
+    - Handling is identical to 'MainGameEventHandler.handle_events()' method, but without enemy turns or updating FOV.
+    '''
+
+    def handle_events(self) -> None:
+        for event in tcod.event.wait():
+            action = self.dispatch(event)
+
+            if action is None:
+                continue
+
+            action.perform()
+
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
+        '''
+        same as the 'MainGameEventHandler.ev_keydown()' method but only allows for 'ESC' key. Player and Engine objects are omitted.
+        '''
+        action: Optional[Action] = None
+
+        key = event.SystemExit
+
+        if key == tcod.event.K_ESCAPE:
+            action = EscapeAction(self.engine.player)
+
+        # No valud keypress, return a blank object ('None')
+        return action
+

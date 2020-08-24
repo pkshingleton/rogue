@@ -14,6 +14,8 @@ from __future__ import annotations
 import copy
 from typing import (Optional, Tuple, Type, TypeVar, TYPE_CHECKING)
 
+from render_order import RenderOrder
+
 if TYPE_CHECKING:
     from components.ai import BaseAI
     from components.fighter import Fighter
@@ -38,19 +40,21 @@ class Entity:
         # Set initial values
         self, 
         gamemap: Optional[GameMap] = None,
-        x: int = 0,                                     # x/y   - entity's position
-        y: int = 0,     
-        char: str = "?",                                # char  - its symbol/sprite
-        color: Tuple[int, int, int] = (255, 255, 255),  # color - an RGB color value
-        name: str = "<Unnamed>",                        # name  - references the entity
-        blocks_movement: bool = False,                  # Walkable or not (enemies aren't, items and NPCs are)
+        x:                int = 0,                                    # x/y   - entity's position
+        y:                int = 0,     
+        char:             str = "?",                                  # char  - its symbol/sprite
+        color:            Tuple[int, int, int] = (255, 255, 255),     # color - an RGB color value
+        name:             str = "<Unnamed>",                          # name  - references the entity
+        blocks_movement:  bool = False,                               # Walkable or not (enemies aren't, items and NPCs are)
+        render_order:     RenderOrder = RenderOrder.CORPSE            # 'corpse' renders first, so its a good default
     ):
-        self.x = x
-        self.y = y
-        self.char = char
-        self.color = color
-        self.name = name
-        self.blocks_movement = blocks_movement
+        self.x              = x
+        self.y              = y
+        self.char           = char
+        self.color          = color
+        self.name           = name
+        self.blocks_movement= blocks_movement
+        self.render_order   = render_order
 
         if gamemap:
             # If a gamemap isn't provided now then it will be set later.
@@ -58,7 +62,6 @@ class Entity:
             gamemap.entities.add(self)
 
 
-    #_____/ METHOD / .spawn(self, gamemap, x, y)
     def spawn(self: T, gamemap: GameMap, x: int, y:int) -> T:
         ''' 
         Spawns a copy of this entity instance at a given location. 
@@ -75,7 +78,9 @@ class Entity:
 
     
     def place(self, x: int, y: int, gamemap: Optional[GameMap] = None) -> None:
-        ''' Place this entity at a new location (handles moving between GameMaps). '''
+        ''' 
+        Place this entity at a new location (handles moving between GameMaps). 
+        '''
         self.x = x
         self.y = y
 
@@ -88,7 +93,6 @@ class Entity:
             gamemap.entities.add(self)
 
 
-    #_____/ METHOD / .move(dx, dy)
     def move(self, dx: int, dy: int) -> None:
         # Move the entity by a given amount
         self.x += dx
@@ -112,15 +116,15 @@ class Actor(Entity):
         ai_cls: Type[BaseAI],
         fighter: Fighter
     ):
-
         # Calls the super class '__init__()' function (ie, the parent class / 'Entity' class __init__)
         super().__init__(
-            x = x, 
-            y = y,
-            char = char,
-            color = color, 
-            name = name, 
-            blocks_movement = True      # Always pass in 'True' (since all "actors" will block movement)
+            x               = x, 
+            y               = y,
+            char            = char,
+            color           = color, 
+            name            = name, 
+            blocks_movement = True,                 # Always pass in 'True' (since all "actors" will block movement)
+            render_order    = RenderOrder.ACTOR
         )
 
         # Assign components (each actor needs the ability to move around and deal/take damage)

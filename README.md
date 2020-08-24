@@ -22,8 +22,9 @@ Following **[this tutorial](http://rogueliketutorials.com/tutorials/tcod/v2/)**,
 
 [Part 5](http://rogueliketutorials.com/tutorials/tcod/v2/part-5/): Placing enemies and a combat action.
 
--> **[Part 6](http://rogueliketutorials.com/tutorials/tcod/v2/part-6/)**: Handling damage.
+[Part 6](http://rogueliketutorials.com/tutorials/tcod/v2/part-6/): Handling damage.
 
+-> **[Part 7](http://rogueliketutorials.com/tutorials/tcod/v2/part-7/)**: Creating the Interface.
 
 
 
